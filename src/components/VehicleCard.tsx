@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { VehicleSheet } from './vehicle/VehicleSheet';
+import { VehicleSheet } from './vehicles/VehicleSheet';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 interface VehicleCardProps {

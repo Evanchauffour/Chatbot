@@ -2,6 +2,7 @@
 
 import React from 'react'
 import UserButton from './UserButton'
+import Link from 'next/link'
 
 export default function Header () {
 
@@ -11,7 +12,7 @@ export default function Header () {
         <nav>
           <ul className="flex gap-8">
             <li>
-              <a href="/home" className="text-base">Accueil</a>
+              <Link href="/" className="text-base">Accueil</Link>
             </li>
           </ul>
         </nav>

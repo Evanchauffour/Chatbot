@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import VehicleCard from '@/components/VehicleCard'
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import CreateVehicleDialog from '@/components/vehicle/CreateVehicleDialog';
+import CreateVehicleDialog from '@/components/vehicles/CreateVehicleDialog';
 
 // Sample data - In a real application, this would come from an API or database
 const sampleVehicles = [

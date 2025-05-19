@@ -1,6 +1,6 @@
 "use client"
 
-import AppointmentCard from '@/components/appointment/AppointmentCard'
+import AppointmentCard from '@/components/appointments/AppointmentCard'
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'

@@ -38,8 +38,8 @@ export default function UserButton () {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem><Link href='/account'>Mon compte</Link></DropdownMenuItem>
-        <DropdownMenuItem><Link href='/account'>Rendez-vous</Link></DropdownMenuItem>
-        <DropdownMenuItem><Link href='/account'>Véhicules</Link></DropdownMenuItem>
+        <DropdownMenuItem><Link href='/appointments'>Rendez-vous</Link></DropdownMenuItem>
+        <DropdownMenuItem><Link href='/vehicles'>Véhicules</Link></DropdownMenuItem>
         <DropdownMenuItem><button onClick={logout}>Déconnexion</button></DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
