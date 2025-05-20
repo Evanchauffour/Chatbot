@@ -31,7 +31,7 @@ export async function createVehicle(data: VehicleData) {
       mileage: Number(data.mileage),
       drivers: data.drivers,
     }),
-  });
+  });  
   
   const json = await response.json();
 

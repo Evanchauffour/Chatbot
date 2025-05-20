@@ -42,7 +42,7 @@ export default function CreateVehicleDialog() {
 
   const handleConfirm = async (data: FormValues) => {    
     try {
-      await createVehicle({...data, drivers: driversSelected.map(driver => driver["@id"])})
+      await createVehicle({...data, drivers: driversSelected.map(driver => `/api/drivers/${driver.id}`)})
       form.reset()
       setOpen(false)
     } catch (error) {
