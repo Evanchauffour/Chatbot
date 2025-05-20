@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,6 +13,8 @@ import {
 } from "@/components/ui/sheet"
 import { useForm } from "react-hook-form"
 import { updateVehicle } from "@/actions/vehicle"
+import { useState } from "react"
+import ManageDriversDialog from "./ManageDriversDialog"
 
 interface VehicleSheetProps { 
   id: string
@@ -32,6 +36,7 @@ type FormData = {
   vin: string
   firstRegistrationDate: string
   mileage: number
+  drivers: string[]
 }
 
 export function VehicleSheet({ 
@@ -45,6 +50,7 @@ export function VehicleSheet({
   open, 
   onOpenChange,
 }: VehicleSheetProps) {
+  const [driversDialogOpen, setDriversDialogOpen] = useState(false)
   const form = useForm<FormData>({
     defaultValues: {
       brand: initialBrand,
@@ -76,6 +82,7 @@ export function VehicleSheet({
             </SheetDescription>
           </SheetHeader>
           <div className="grid gap-4 p-4">
+            <Button className='w-full' onClick={() => setDriversDialogOpen(true)}>Gérer les conducteurs</Button>
             <div className="flex flex-col gap-2">
               <Label htmlFor="brand" className="text-right">
                 Marque
@@ -144,6 +151,7 @@ export function VehicleSheet({
           </SheetFooter>
         </form>
       </SheetContent>
+      <ManageDriversDialog open={driversDialogOpen} onOpenChange={setDriversDialogOpen} id={id} />
     </Sheet>
   )
 }

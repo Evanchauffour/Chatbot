@@ -1,7 +1,7 @@
 import React from 'react'
-import VehicleCard from '@/components/VehicleCard'
 import CreateVehicleDialog from '@/components/vehicles/CreateVehicleDialog';
 import { cookies } from 'next/headers'
+import VehicleCard from '@/components/vehicles/VehicleCard';
 
 interface Vehicle {
   id: number
@@ -19,7 +19,7 @@ export default async function VehiclePage() {
   const cookieStore = await cookies()
   const token = cookieStore.get('BEARER')
 
-  const response = await fetch('http://localhost:8000/api/users/1/vehicles', {
+  const response = await fetch('http://localhost:8000/api/user/vehicles', {
     headers: {
       'Authorization': `Bearer ${token?.value}`,
     },

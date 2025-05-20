@@ -9,6 +9,7 @@ interface VehicleData {
   vin: string
   firstRegistrationDate: string
   mileage: number
+  drivers: string[]
 }
 
 export async function createVehicle(data: VehicleData) {
@@ -28,7 +29,7 @@ export async function createVehicle(data: VehicleData) {
       vin: data.vin,
       firstRegistrationDate: new Date(data.firstRegistrationDate).toISOString(),
       mileage: Number(data.mileage),
-      drivers: ["/api/drivers/1"],
+      drivers: data.drivers,
     }),
   });
   
@@ -69,3 +70,42 @@ export async function updateVehicle(data: VehicleData, id: string) {
   return response.json();
 }
 
+export async function deleteVehicleDriver(vehicleId: string, driverId: string) {
+  const cookieStore = await cookies()
+  const token = cookieStore.get('BEARER')
+
+  const response = await fetch(`http://localhost:8000/api/vehicle/${vehicleId}/driver/${driverId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token?.value}`,
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to delete vehicle driver');
+  }
+
+  return response.json();
+}
+
+export async function updateVehicleDrivers(vehicleId: string, driverIds: string[]) {
+  const cookieStore = await cookies()
+  const token = cookieStore.get('BEARER')
+
+  const response = await fetch(`http://localhost:8000/api/vehicle/${vehicleId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/ld+json',
+      'Authorization': `Bearer ${token?.value}`,
+    },
+    body: JSON.stringify({
+      drivers: driverIds,
+    }),
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to update vehicle drivers');
+  }
+
+  return response.json();
+}

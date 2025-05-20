@@ -8,6 +8,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../ui/input'
 import { createVehicle } from '@/actions/vehicle'
 import { Plus } from 'lucide-react'
+import { Switch } from '../ui/switch'
+import { Label } from '../ui/label'
+import DriversDialog from './DriversDialog'
+import useDriversStore from '@/store/drivers.store'
 
 interface FormValues {
   brand: string
@@ -20,6 +24,11 @@ interface FormValues {
 
 export default function CreateVehicleDialog() {
   const [open, setOpen] = useState(false)
+  const [isCurrentDriver, setIsCurrentDriver] = useState(true)
+  const [driversDialogOpen, setDriversDialogOpen] = useState(false)
+  const driversSelected = useDriversStore((state) => state.drivers)
+  console.log(driversSelected);
+  
   const form = useForm<FormValues>({
     defaultValues: {
       brand: '',
@@ -33,7 +42,7 @@ export default function CreateVehicleDialog() {
 
   const handleConfirm = async (data: FormValues) => {    
     try {
-      await createVehicle(data)
+      await createVehicle({...data, drivers: driversSelected.map(driver => driver["@id"])})
       form.reset()
       setOpen(false)
     } catch (error) {
@@ -50,6 +59,15 @@ export default function CreateVehicleDialog() {
         <DialogHeader>
           <DialogTitle>Ajouter un véhicule</DialogTitle>
         </DialogHeader>
+
+        <div className='flex items-center gap-2'>
+          <Label htmlFor='isCurrentDriver'>Je suis le conducteur</Label>
+          <Switch id='isCurrentDriver' checked={isCurrentDriver} onCheckedChange={setIsCurrentDriver} />
+        </div>
+
+        {!isCurrentDriver && (
+          <Button className='w-full' onClick={() => setDriversDialogOpen(true)}>Ajouter un conducteur</Button>
+        )}
         
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleConfirm)} className="space-y-4">
@@ -147,6 +165,9 @@ export default function CreateVehicleDialog() {
           </form>
         </Form>
       </DialogContent>
+      <DriversDialog open={driversDialogOpen} onOpenChange={setDriversDialogOpen} onSubmit={() => {
+        setDriversDialogOpen(false)
+      }} />
     </Dialog>
   )
 }

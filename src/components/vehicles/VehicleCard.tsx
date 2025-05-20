@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { VehicleSheet } from './vehicles/VehicleSheet';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { VehicleSheet } from './VehicleSheet';
 
 interface VehicleCardProps {
   id: number;
@@ -66,7 +66,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
           Voir les détails
         </button>
       </div>
-      <VehicleSheet 
+      <VehicleSheet
         open={open} 
         onOpenChange={handleOpenChange}
         id={id.toString()}
