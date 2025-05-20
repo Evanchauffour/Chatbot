@@ -1,10 +1,13 @@
-import React from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog'
+'use client'
+
+import React, { useState } from 'react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { useForm, ControllerRenderProps } from 'react-hook-form'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
 import { createVehicle } from '@/actions/vehicle'
+import { Plus } from 'lucide-react'
 
 interface FormValues {
   brand: string
@@ -15,12 +18,8 @@ interface FormValues {
   mileage: number
 }
 
-interface CreateVehicleDialogProps {  
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
-
-export default function CreateVehicleDialog({ open, onOpenChange }: CreateVehicleDialogProps) {
+export default function CreateVehicleDialog() {
+  const [open, setOpen] = useState(false)
   const form = useForm<FormValues>({
     defaultValues: {
       brand: '',
@@ -32,20 +31,21 @@ export default function CreateVehicleDialog({ open, onOpenChange }: CreateVehicl
     },
   })
 
-  const handleConfirm = async (data: FormValues) => {
-    console.log(data);
-    
+  const handleConfirm = async (data: FormValues) => {    
     try {
-      const response = await createVehicle(data)
-      console.log(response)
-      onOpenChange(false)
+      await createVehicle(data)
+      form.reset()
+      setOpen(false)
     } catch (error) {
       console.error('Error creating vehicle:', error)
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className='w-fit'><Plus className='w-4 h-4 mr-2' /> Ajouter un véhicule</Button>
+      </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Ajouter un véhicule</DialogTitle>
@@ -141,7 +141,7 @@ export default function CreateVehicleDialog({ open, onOpenChange }: CreateVehicl
             />
 
             <DialogFooter className="flex gap-2">
-              <Button variant="outline" onClick={() => onOpenChange(false)}>Annuler</Button>
+              <Button variant="outline">Annuler</Button>
               <Button type="submit">Ajouter</Button>
             </DialogFooter>
           </form>

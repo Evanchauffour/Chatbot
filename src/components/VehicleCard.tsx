@@ -6,21 +6,25 @@ import { VehicleSheet } from './vehicles/VehicleSheet';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 interface VehicleCardProps {
-  id: string;
-  name: string;
+  id: number;
   brand: string;
   model: string;
-  year: number;
-  imageUrl: string;
+  registrationNumber: string;
+  vin: string;
+  firstRegistrationDate: string;
+  mileage: number;
+  drivers: string[];
+  users: string[];
 }
 
 const VehicleCard: React.FC<VehicleCardProps> = ({
   id,
-  name,
   brand,
   model,
-  year,
-  imageUrl,
+  registrationNumber,
+  vin,
+  firstRegistrationDate,
+  mileage,
 }) => {
   const [open, setOpen] = useState(false);
   const searchParams = useSearchParams();
@@ -29,7 +33,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
   useEffect(() => {
     const vehicleId = searchParams.get('vehicleId');
     
-    if(vehicleId && vehicleId === id) {
+    if(vehicleId && vehicleId === id.toString()) {
       setOpen(true);
     }
   }, [searchParams, id]);
@@ -47,16 +51,17 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="relative h-48 w-full">
         <Image
-          src={imageUrl}
+          src="/voiture.png"
           alt={`${brand} ${model}`}
           fill
           className="object-cover"
         />
       </div>
       <div className="p-4">
-        <h3 className="text-xl font-semibold text-gray-800">{name}</h3>
-        <p className="text-gray-600">{brand} {model}</p>
-        <p className="text-gray-500">Année: {year}</p>
+        <h3 className="text-xl font-semibold text-gray-800">{brand} {model}</h3>
+        <p className="text-gray-600">Immatriculation: {registrationNumber}</p>
+        <p className="text-gray-500">Kilométrage: {mileage} km</p>
+        <p className="text-gray-500">Date de première immatriculation: {new Date(firstRegistrationDate).toLocaleDateString()}</p>
         <button onClick={() => setOpen(true)} className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300">
           Voir les détails
         </button>
@@ -64,11 +69,14 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
       <VehicleSheet 
         open={open} 
         onOpenChange={handleOpenChange}
-        name={name} 
+        id={id.toString()}
         brand={brand} 
         model={model} 
-        year={year} 
-        imageUrl={imageUrl} 
+        registrationNumber={registrationNumber}
+        vin={vin}
+        firstRegistrationDate={firstRegistrationDate}
+        mileage={mileage}
+        imageUrl="/voiture.png"
       />
     </div>
   );
