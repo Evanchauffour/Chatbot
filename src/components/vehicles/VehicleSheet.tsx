@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Sheet,
   SheetContent,
@@ -10,66 +10,68 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet"
-import { useForm } from "react-hook-form"
-import { updateVehicle } from "@/actions/vehicle"
-import { useState } from "react"
-import ManageDriversDialog from "./ManageDriversDialog"
+} from "@/components/ui/sheet";
+import { useForm } from "react-hook-form";
+import { updateVehicle } from "@/actions/vehicle";
+import { useState } from "react";
+import ManageDriversDialog from "./ManageDriversDialog";
+import ForecastDialog from "./ForecastDialog";
 
-interface VehicleSheetProps { 
-  id: string
-  brand: string
-  model: string
-  registrationNumber: string
-  vin: string
-  firstRegistrationDate: string
-  mileage: number
-  imageUrl: string
-  open: boolean
-  onOpenChange: (open: boolean) => void
+interface VehicleSheetProps {
+  id: string;
+  brand: string;
+  model: string;
+  registrationNumber: string;
+  vin: string;
+  firstRegistrationDate: string;
+  mileage: number;
+  imageUrl: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 type FormData = {
-  brand: string
-  model: string
-  registrationNumber: string
-  vin: string
-  firstRegistrationDate: string
-  mileage: number
-  drivers: string[]
-}
+  brand: string;
+  model: string;
+  registrationNumber: string;
+  vin: string;
+  firstRegistrationDate: string;
+  mileage: number;
+  drivers: string[];
+};
 
-export function VehicleSheet({ 
+export function VehicleSheet({
   id,
-  brand: initialBrand, 
-  model: initialModel, 
+  brand: initialBrand,
+  model: initialModel,
   registrationNumber: initialRegistrationNumber,
   vin: initialVin,
   firstRegistrationDate: initialFirstRegistrationDate,
   mileage: initialMileage,
-  open, 
+  open,
   onOpenChange,
 }: VehicleSheetProps) {
-  const [driversDialogOpen, setDriversDialogOpen] = useState(false)
+  const [driversDialogOpen, setDriversDialogOpen] = useState(false);
+  const [forecastOpen, setForecastOpen] = useState(false);
   const form = useForm<FormData>({
     defaultValues: {
       brand: initialBrand,
       model: initialModel,
       registrationNumber: initialRegistrationNumber,
       vin: initialVin,
-      firstRegistrationDate: initialFirstRegistrationDate.split('T')[0],
+      firstRegistrationDate: initialFirstRegistrationDate.split("T")[0],
       mileage: initialMileage,
-    }
-  })
+    },
+  });
 
   const handleSubmit = async (data: FormData) => {
     try {
-      await updateVehicle(data, id)
-      onOpenChange(false)
+      await updateVehicle(data, id);
+      onOpenChange(false);
     } catch (error) {
-      console.error('Failed to update vehicle:', error)
+      console.error("Failed to update vehicle:", error);
     }
-  }
+  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -82,76 +84,98 @@ export function VehicleSheet({
             </SheetDescription>
           </SheetHeader>
           <div className="grid gap-4 p-4">
-            <Button className='w-full' onClick={() => setDriversDialogOpen(true)}>Gérer les conducteurs</Button>
+            <Button
+              className="w-full"
+              onClick={() => setDriversDialogOpen(true)}
+            >
+              Gérer les conducteurs
+            </Button>
             <div className="flex flex-col gap-2">
               <Label htmlFor="brand" className="text-right">
                 Marque
               </Label>
-              <Input 
-                id="brand" 
+              <Input
+                id="brand"
                 {...form.register("brand")}
-                className="col-span-3" 
+                className="col-span-3"
               />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="model" className="text-right">
                 Modèle
               </Label>
-              <Input 
-                id="model" 
+              <Input
+                id="model"
                 {...form.register("model")}
-                className="col-span-3" 
+                className="col-span-3"
               />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="registrationNumber" className="text-right">
                 Immatriculation
               </Label>
-              <Input 
-                id="registrationNumber" 
+              <Input
+                id="registrationNumber"
                 {...form.register("registrationNumber")}
-                className="col-span-3" 
+                className="col-span-3"
               />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="vin" className="text-right">
                 Numéro de série (VIN)
               </Label>
-              <Input 
-                id="vin" 
+              <Input
+                id="vin"
                 {...form.register("vin")}
-                className="col-span-3" 
+                className="col-span-3"
               />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="firstRegistrationDate" className="text-right">
                 Date de première immatriculation
               </Label>
-              <Input 
-                id="firstRegistrationDate" 
+              <Input
+                id="firstRegistrationDate"
                 type="date"
                 {...form.register("firstRegistrationDate")}
-                className="col-span-3" 
+                className="col-span-3"
               />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="mileage" className="text-right">
                 Kilométrage
               </Label>
-              <Input 
-                id="mileage" 
+              <Input
+                id="mileage"
                 type="number"
                 {...form.register("mileage", { valueAsNumber: true })}
-                className="col-span-3" 
+                className="col-span-3"
               />
             </div>
           </div>
           <SheetFooter>
             <Button type="submit">Enregistrer les modifications</Button>
+            <Button type="button" onClick={() => setForecastOpen(true)}>
+              Voir les prévisions futures
+            </Button>
           </SheetFooter>
         </form>
       </SheetContent>
-      <ManageDriversDialog open={driversDialogOpen} onOpenChange={setDriversDialogOpen} id={id} />
+      <ManageDriversDialog
+        open={driversDialogOpen}
+        onOpenChange={setDriversDialogOpen}
+        id={id}
+      />
+      <ForecastDialog
+        open={forecastOpen}
+        onOpenChange={setForecastOpen}
+        vehicule={{
+          make: form.watch("brand"),
+          model: form.watch("model"),
+          year: new Date(form.watch("firstRegistrationDate")).getFullYear(),
+          mileage: form.watch("mileage"),
+        }}
+      />
     </Sheet>
-  )
+  );
 }
