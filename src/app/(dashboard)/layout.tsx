@@ -11,9 +11,9 @@ export default async function layout({ children }: { children: React.ReactNode }
     redirect('/signin')
   }
   return (
-    <div>
+    <div className='flex flex-col h-screen'>
         <Header />
-        <main className='mx-12'>
+        <main className='flex-1 mx-12'>
             {children}
         </main>
     </div>
