@@ -23,6 +23,7 @@ interface ChatbotStore {
   fetchAdditionalOperation: (vehicle: Vehicle, operation: string) => Promise<void>
   fetchTimeSlots: () => Promise<void>
   disableSearch: () => void
+  resetStore: () => void
 }
 
 export const useChatbotStore = create<ChatbotStore>((set) => ({
@@ -143,4 +144,22 @@ export const useChatbotStore = create<ChatbotStore>((set) => ({
     set({ timeSlots: mockTimeSlots })
   },
   disableSearch: () => set({ isSearchDisabled: true }),
+  resetStore: () => set({
+    messages: [{
+      id: crypto.randomUUID(),
+      content: "Bonjour ! Je suis votre assistant virtuel. Comment puis-je vous aider aujourd'hui ?",
+      type: "general",
+      timestamp: new Date(),
+    }],
+    userMessage: [],
+    operationState: {
+      step: 'vehicle_selection',
+    },
+    vehicles: [],
+    additionalOperation: [],  
+    timeSlots: [],
+    selectedVehicle: null,
+    operationSelected: [],
+    isSearchDisabled: false,
+  }),
 })) 
