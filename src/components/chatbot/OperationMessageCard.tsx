@@ -22,7 +22,10 @@ export function OperationMessageCard({ message }: OperationMessageCardProps) {
     selectVehicle,
     setOperationStep,
     selectTimeSlot,
-    fetchAdditionalOperation
+    fetchAdditionalOperation,
+    additionalOperation,
+    selectOperation,
+    operationSelected
   } = useChatbotStore()
 
   useEffect(() => {
@@ -77,8 +80,32 @@ export function OperationMessageCard({ message }: OperationMessageCardProps) {
     {
       id: 'additional_operation_selection',
       render: () => (
-        <div className="space-y-4">
+        <div className="space-y-4 w-full">
           <h3 className="font-medium">Sélectionnez les services supplémentaires</h3>
+          <div className="grid grid-cols-3 gap-4 w-full">
+            {additionalOperation.map((operation) => (
+              <Card 
+                key={operation.operation}
+                className={`p-4 cursor-pointer transition-colors ${
+                  operationSelected.includes(operation) ? 'border-blue-500 bg-blue-50' : ''
+                }`}
+                onClick={() => {
+                  selectOperation(operation)
+                  setOperationStep('additional_operation_selection')
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <Checkbox checked={operationSelected.includes(operation)} />
+                  <div>
+                    <p className="font-medium">{operation.operation}</p>
+                    <p className="text-sm text-gray-500">
+                      {operation.price} €
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
         </div>
       )
     },
@@ -116,7 +143,7 @@ export function OperationMessageCard({ message }: OperationMessageCardProps) {
     <div className="space-y-4">
       <MessageCard message={message} />
       {steps.slice(0, getCurrentStepIndex() + 1).map((step) => (
-        <Card key={step.id} className="p-4 max-w-[80%] bg-blue-50 border-blue-200">
+        <Card key={step.id} className="p-4 w-full bg-blue-50 border-blue-200">
           <div className="space-y-4">
             <div className="flex items-start gap-2">
               <Wrench className="h-4 w-4 text-blue-500 mt-1" />

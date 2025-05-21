@@ -66,7 +66,7 @@ export default function AppointmentPage() {
           {showPast ? "Masquer les rendez-vous passés" : "Afficher les rendez-vous passés"}
         </Button>
       </div>
-      <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
+      <div className='grid grid-cols-2 gap-4'>
         {filteredAppointments.map((appointment) => (
           <AppointmentCard
             key={appointment.id}

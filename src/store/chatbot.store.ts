@@ -1,32 +1,42 @@
 import { create } from 'zustand'
-import { ChatMessage, MessageType, OperationState, Vehicle, TimeSlot, AdditionalOperation } from '@/types/chatbot'
+import { ChatMessage, MessageType, OperationState, Vehicle, TimeSlot, AdditionalOperation, UserMessage } from '@/types/chatbot'
+import dayjs from 'dayjs'
 
 interface ChatbotStore {
   messages: ChatMessage[]
+  userMessage: UserMessage[]
   operationState: OperationState
   vehicles: Vehicle[]
   additionalOperation: AdditionalOperation[]
   timeSlots: TimeSlot[]
+  selectedVehicle: Vehicle | null
+  operationSelected: AdditionalOperation[]
+  isSearchDisabled: boolean
   addMessage: (content: string, type: MessageType) => void
+  addUserMessage: (content: string) => void
   clearMessages: () => void
   setOperationStep: (step: OperationState['step']) => void
   selectVehicle: (vehicleId: string) => void
   selectTimeSlot: (timeSlotId: string) => void
+  selectOperation: (operation: AdditionalOperation) => void
   fetchVehicles: () => Promise<void>
   fetchAdditionalOperation: (vehicle: Vehicle, operation: string) => Promise<void>
   fetchTimeSlots: () => Promise<void>
+  disableSearch: () => void
 }
 
 export const useChatbotStore = create<ChatbotStore>((set) => ({
   messages: [],
+  userMessage: [],
   operationState: {
     step: 'vehicle_selection',
-    selectedServices: [],
   },
   vehicles: [],
   additionalOperation: [],
   timeSlots: [],
-
+  selectedVehicle: null,
+  operationSelected: [],
+  isSearchDisabled: false,
   addMessage: (content: string, type: MessageType) => 
     set((state) => ({
       messages: [
@@ -40,15 +50,21 @@ export const useChatbotStore = create<ChatbotStore>((set) => ({
       ],
     })),
 
+  addUserMessage: (content: string) =>
+    set((state) => ({
+      userMessage: [...state.userMessage, { id: crypto.randomUUID(), position: state.userMessage.length, content, timestamp: new Date() }],
+    })),
+
   clearMessages: () => set({ messages: [] }),
 
-  setOperationStep: (step) => 
+  setOperationStep: (step) => {
     set((state) => ({
       operationState: {
         ...state.operationState,
         step,
       },
-    })),
+    }))
+  },
 
   selectVehicle: (vehicleId) => 
     set((state) => ({
@@ -60,7 +76,17 @@ export const useChatbotStore = create<ChatbotStore>((set) => ({
         ...state.operationState,
         selectedVehicle: state.vehicles.find(v => v.id === vehicleId),
       },
+      selectedVehicle: state.vehicles.find(v => v.id === vehicleId),
     })),
+
+  selectOperation: (operation) => 
+    set((state) => ({
+      operationSelected: state.operationSelected.includes(operation)
+        ? state.operationSelected.filter(o => o !== operation)
+        : [...state.operationSelected, operation]
+    })),
+
+    
 
   selectTimeSlot: (timeSlotId) =>
     set((state) => ({
@@ -94,14 +120,14 @@ export const useChatbotStore = create<ChatbotStore>((set) => ({
           "vehicule": {
             "make": vehicle.brand,
             "model": vehicle.model,
-            "year": Number(vehicle.firstRegistrationDate),
+            "year": Number(dayjs(vehicle.firstRegistrationDate).format('YYYY')),
             "mileage": Number(vehicle.mileage)
           },
           "operation": operation
         }),
       })
       const data = await response.json()  
-      set({ additionalOperation: data })
+      set({ additionalOperation: data.ai_suggestions })
     } catch (error) {
       console.error("Erreur lors de la récupération des informations du véhicule:", error)
     }
@@ -116,4 +142,5 @@ export const useChatbotStore = create<ChatbotStore>((set) => ({
     ]
     set({ timeSlots: mockTimeSlots })
   },
+  disableSearch: () => set({ isSearchDisabled: true }),
 })) 

@@ -7,6 +7,13 @@ export interface ChatMessage {
   timestamp: Date
 }
 
+export interface UserMessage {
+  id: string
+  position: number
+  content: string
+  timestamp: Date
+}
+
 export interface Vehicle {
   id: string
   name: string
@@ -36,4 +43,10 @@ export interface AdditionalOperation {
   id: string
   name: string
   description: string
+  operation: string
+  category: string
+  additionnal_help?: string
+  additionnal_comment?: string | null
+  time_unit: string
+  price: string
 }
