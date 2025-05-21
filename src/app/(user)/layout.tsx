@@ -1,7 +1,7 @@
-import Header from '@/components/header/Header'
 import React from 'react'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import NavBar from '@/components/NavBar'
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies()
@@ -12,9 +12,9 @@ export default async function Layout({ children }: { children: React.ReactNode }
   }
 
   return (
-    <div className='flex flex-col gap-10'>
-      <Header />
-      <main className='mx-12'>
+    <div className='flex h-screen'>
+      <NavBar />
+      <main className='mx-12 py-4 flex-1'>
         {children}
       </main>
     </div>

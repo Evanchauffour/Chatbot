@@ -1,4 +1,3 @@
-// components/OperationMessageCard.tsx
 "use client";
 
 import { useEffect } from "react";
@@ -10,6 +9,7 @@ import AddVehicleForm from "./steps/AddVehicleForm";
 import { createVehicle } from "@/actions/vehicle";
 import { useChatbotStore } from "@/store/chatbot.store";
 import type { OperationStep } from "@/types/chatbot";
+import { Checkbox } from "../ui/checkbox";
 
 interface OperationMessageCardProps {
   message: string;
@@ -26,6 +26,9 @@ export function OperationMessageCard({ message }: OperationMessageCardProps) {
     setOperationStep,
     selectTimeSlot,
     fetchAdditionalOperation,
+    additionalOperation,
+    selectOperation,
+    operationSelected,
   } = useChatbotStore();
 
   useEffect(() => {
@@ -77,10 +80,34 @@ export function OperationMessageCard({ message }: OperationMessageCardProps) {
     {
       id: "additional_operation_selection" as OperationStep,
       render: () => (
-        <div className="space-y-4">
+        <div className="space-y-4 w-full">
           <h3 className="font-medium">
             Sélectionnez les services supplémentaires
           </h3>
+          <div className="grid grid-cols-3 gap-4 w-full">
+            {additionalOperation.map((operation) => (
+              <Card 
+                key={operation.operation}
+                className={`p-4 cursor-pointer transition-colors ${
+                  operationSelected.includes(operation) ? 'border-blue-500 bg-blue-50' : ''
+                }`}
+                onClick={() => {
+                  selectOperation(operation)
+                  setOperationStep('additional_operation_selection')
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <Checkbox checked={operationSelected.includes(operation)} />
+                  <div>
+                    <p className="font-medium">{operation.operation}</p>
+                    <p className="text-sm text-gray-500">
+                      {operation.price} €
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
         </div>
       ),
     },
@@ -129,7 +156,7 @@ export function OperationMessageCard({ message }: OperationMessageCardProps) {
       {stepsToRender.slice(0, currentIndex + 1).map((step) => (
         <Card
           key={step.id}
-          className="p-4 max-w-[80%] bg-blue-50 border-blue-200"
+          className="p-4 w-full bg-blue-50 border-blue-200"
         >
           <div className="flex items-start gap-2">
             <Wrench className="h-4 w-4 text-blue-500 mt-1" />

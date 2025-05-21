@@ -2,10 +2,17 @@
 export type MessageType = "general" | "service";
 
 export interface ChatMessage {
-  id: string;
-  type: MessageType;
-  content: string;
-  timestamp: Date;
+  id: string
+  type: MessageType
+  content: string
+  timestamp: Date
+}
+
+export interface UserMessage {
+  id: string
+  position: number
+  content: string
+  timestamp: Date
 }
 
 export interface Vehicle {
@@ -38,7 +45,13 @@ export interface OperationState {
 }
 
 export interface AdditionalOperation {
-  id: string;
-  name: string;
-  description: string;
+  id: string
+  name: string
+  description: string
+  operation: string
+  category: string
+  additionnal_help?: string
+  additionnal_comment?: string | null
+  time_unit: string
+  price: string
 }
