@@ -22,7 +22,7 @@ export function OperationMessageCard({ message }: OperationMessageCardProps) {
     timeSlots,
     fetchVehicles,
     fetchTimeSlots,
-    selectVehicle,
+    selectVehicle: storeSelectVehicle,
     setOperationStep,
     selectTimeSlot,
     fetchAdditionalOperation,
@@ -46,7 +46,6 @@ export function OperationMessageCard({ message }: OperationMessageCardProps) {
 
   const OPTIONAL_STEP: OperationStep = "additional_add_vehicle";
 
-  // Liste complète des étapes
   const allSteps = [
     {
       id: "vehicle_selection" as OperationStep,
@@ -54,7 +53,7 @@ export function OperationMessageCard({ message }: OperationMessageCardProps) {
         <VehicleSelectionStep
           vehicles={vehicles}
           selectVehicle={(id) => {
-            selectVehicle(id);
+            storeSelectVehicle(id);
             setOperationStep("additional_operation_selection");
           }}
           onAddVehicle={() => setOperationStep(OPTIONAL_STEP)}
@@ -66,11 +65,10 @@ export function OperationMessageCard({ message }: OperationMessageCardProps) {
       render: () => (
         <AddVehicleForm
           onSubmit={async (data) => {
-            const vehicleCreated = await createVehicle(data);
-
+            const created = await createVehicle(data);
             await fetchVehicles();
             setOperationStep("vehicle_selection");
-            selectVehicle(vehicleCreated.id);
+            storeSelectVehicle(created.id);
           }}
           onCancel={() => setOperationStep("vehicle_selection")}
         />
@@ -114,7 +112,6 @@ export function OperationMessageCard({ message }: OperationMessageCardProps) {
     },
   ];
 
-  // Filtrer dynamiquement : si on est dans optional, on n'affiche que les 2 premières ; sinon on retire l'optional
   const stepsToRender =
     operationState.step === OPTIONAL_STEP
       ? allSteps.filter(
