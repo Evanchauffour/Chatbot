@@ -1,9 +1,12 @@
-// components/steps/AddVehicleForm.tsx
 "use client";
 
+// components/steps/AddVehicleForm.tsx
 import { useState, FormEvent, useTransition } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 type VehicleData = {
   brand: string;
   model: string;
@@ -28,7 +31,7 @@ export default function AddVehicleForm({
     registrationNumber: "",
     vin: "",
     firstRegistrationDate: "",
-    mileage: 0,
+    mileage: NaN, // j'ai mis NaN car le 0 bloque et null passe pas pour number
     drivers: [],
   });
   const [isPending, startTransition] = useTransition();
@@ -46,70 +49,102 @@ export default function AddVehicleForm({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Card className="p-4 space-y-4 max-w-[80%] bg-green-50 border-green-200">
-        <h3 className="font-medium">Ajouter un véhicule</h3>
-        <div className="space-y-2">
-          <input
-            className="w-full p-2 border rounded"
-            placeholder="Marque"
-            value={formData.brand}
-            onChange={(e) => handleChange("brand", e.target.value)}
-            required
-          />
-          <input
-            className="w-full p-2 border rounded"
-            placeholder="Modèle"
-            value={formData.model}
-            onChange={(e) => handleChange("model", e.target.value)}
-            required
-          />
-          <input
-            className="w-full p-2 border rounded"
-            placeholder="N° d’immatriculation"
-            value={formData.registrationNumber}
-            onChange={(e) => handleChange("registrationNumber", e.target.value)}
-            required
-          />
-          <input
-            className="w-full p-2 border rounded"
-            placeholder="VIN"
-            value={formData.vin}
-            onChange={(e) => handleChange("vin", e.target.value)}
-            required
-          />
-          <input
-            type="date"
-            className="w-full p-2 border rounded"
-            value={formData.firstRegistrationDate}
-            onChange={(e) =>
-              handleChange("firstRegistrationDate", e.target.value)
-            }
-            required
-          />
-          <input
-            type="number"
-            className="w-full p-2 border rounded"
-            placeholder="Kilométrage"
-            value={formData.mileage}
-            onChange={(e) => handleChange("mileage", Number(e.target.value))}
-            required
-          />
-        </div>
-        <div className="flex justify-end gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onCancel}
-            disabled={isPending}
-          >
-            Annuler
-          </Button>
-          <Button type="submit" size="sm" disabled={isPending}>
-            {isPending ? "En cours…" : "Enregistrer"}
-          </Button>
-        </div>
-      </Card>
-    </form>
+    <div className="flex justify-center px-4 py-8">
+      <form onSubmit={handleSubmit} className="w-full max-w-5xl">
+        <Card className="p-8 space-y-8">
+          <h3 className="text-2xl font-semibold text-center">
+            Ajouter un nouveau véhicule
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {[
+              {
+                id: "brand",
+                label: "Marque",
+                type: "text",
+                value: formData.brand,
+                onChange: (v: string) => handleChange("brand", v),
+                placeholder: "Marque",
+              },
+              {
+                id: "model",
+                label: "Modèle",
+                type: "text",
+                value: formData.model,
+                onChange: (v: string) => handleChange("model", v),
+                placeholder: "Modèle",
+              },
+              {
+                id: "registrationNumber",
+                label: "N° d’immatriculation",
+                type: "text",
+                value: formData.registrationNumber,
+                onChange: (v: string) => handleChange("registrationNumber", v),
+                placeholder: "N° d’immatriculation",
+              },
+              {
+                id: "vin",
+                label: "VIN",
+                type: "text",
+                value: formData.vin,
+                onChange: (v: string) => handleChange("vin", v),
+                placeholder: "VIN",
+              },
+              {
+                id: "firstRegistrationDate",
+                label: "Date de première immatriculation",
+                type: "date",
+                value: formData.firstRegistrationDate,
+                onChange: (v: string) =>
+                  handleChange("firstRegistrationDate", v),
+                placeholder: "",
+              },
+              {
+                id: "mileage",
+                label: "Kilométrage",
+                type: "number",
+                value: String(formData.mileage),
+                onChange: (v: string) => handleChange("mileage", Number(v)),
+                placeholder: "Kilométrage",
+              },
+            ].map(({ id, label, type, value, onChange, placeholder }) => (
+              <div key={id}>
+                <Label htmlFor={id} className="text-lg">
+                  {label}
+                </Label>
+                <Input
+                  id={id}
+                  type={type}
+                  value={value}
+                  placeholder={placeholder}
+                  onChange={(e) => onChange(e.target.value)}
+                  required
+                  className="w-full h-12 text-lg"
+                />
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-end gap-6 pt-6">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onCancel}
+              disabled={isPending}
+              className="px-6"
+            >
+              Annuler
+            </Button>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={isPending}
+              className="px-6"
+            >
+              {isPending ? "En cours…" : "Enregistrer"}
+            </Button>
+          </div>
+        </Card>
+      </form>
+    </div>
   );
 }
