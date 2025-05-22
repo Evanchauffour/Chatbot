@@ -3,7 +3,7 @@
 
 import { useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { Wrench } from "lucide-react";
+import { MapPin, Wrench } from "lucide-react";
 import { MessageCard } from "./MessageCard";
 import VehicleSelectionStep from "./steps/VehicleSelectionStep";
 import AddVehicleForm from "./steps/AddVehicleForm";
@@ -11,6 +11,8 @@ import { createVehicle } from "@/actions/vehicle";
 import { useChatbotStore } from "@/store/chatbot.store";
 import type { AdditionalOperation, OperationStep } from "@/types/chatbot";
 import { Checkbox } from "../ui/checkbox";
+import AppointmentStep from "./steps/AppointmentStep";
+import { Button } from "../ui/button";
 import OperationsSelection from "./steps/OperationsSelection";
 
 interface OperationMessageCardProps {
@@ -25,12 +27,10 @@ export function OperationMessageCard({
   const {
     operationState,
     vehicles,
-    timeSlots,
     fetchVehicles,
     fetchTimeSlots,
     selectVehicle: storeSelectVehicle,
     setOperationStep,
-    selectTimeSlot,
     fetchAdditionalOperation,
     additionalOperation,
     selectOperation,
@@ -136,33 +136,17 @@ export function OperationMessageCard({
               </Card>
             ))}
           </div>
+          <Button onClick={() => setOperationStep('appointment_scheduling')} className="w-fit ml-auto">
+            <MapPin className="h-4 w-4" />
+            <p>Choisir un garage</p>
+          </Button>
         </div>
       ),
     },
     {
       id: "appointment_scheduling" as OperationStep,
       render: () => (
-        <div className="space-y-4">
-          <h3 className="font-medium">Choisissez un créneau</h3>
-          <div className="space-y-2">
-            {timeSlots.map((slot) => (
-              <Card
-                key={slot.id}
-                className={`p-4 cursor-pointer ${
-                  !slot.available ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() => slot.available && selectTimeSlot(slot.id)}
-              >
-                <div className="flex items-center justify-between">
-                  <p>{new Date(slot.date).toLocaleString()}</p>
-                  {!slot.available && (
-                    <span className="text-sm text-red-500">Indisponible</span>
-                  )}
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
+        <AppointmentStep />
       ),
     },
   ];
