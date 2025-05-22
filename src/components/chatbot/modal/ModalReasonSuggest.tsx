@@ -16,10 +16,17 @@ export default function ModalReasonSuggest({
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/40" />
         <Dialog.Content className="fixed left-1/2 top-1/2 w-[90vw] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white p-6 shadow-lg space-y-4">
-          <h2 className="text-lg font-semibold">
-            Pourquoi cette suggestion&nbsp;?
-          </h2>
-          <p className="text-sm text-gray-700">{reason}</p>
+          {/* Accessible title for screen-reader users */}
+          <Dialog.Title asChild>
+            <h2 className="text-lg font-semibold">
+              Pourquoi cette suggestion&nbsp;?
+            </h2>
+          </Dialog.Title>
+
+          {/* Optional description element for additional context */}
+          <Dialog.Description asChild>
+            <p className="text-sm text-gray-700">{reason}</p>
+          </Dialog.Description>
 
           <button
             onClick={onClose}
