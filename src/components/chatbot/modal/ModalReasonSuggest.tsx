@@ -30,7 +30,7 @@ export default function ModalReasonSuggest({
 
           <button
             onClick={onClose}
-            className="mt-4 px-4 py-2 rounded-md bg-blue-600 text-white"
+            className="mt-4 px-4 py-2 rounded-md bg-blue-500 text-white"
           >
             Fermer
           </button>

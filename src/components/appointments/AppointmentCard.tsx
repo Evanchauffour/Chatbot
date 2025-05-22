@@ -63,7 +63,7 @@ export default function AppointmentCard({
                 link.download = "appointment-recap.pdf";
                 link.click();
               }}
-              className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-800"
+              className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600"
             >
               <Download className="w-4 h-4" />
               Télécharger le PDF

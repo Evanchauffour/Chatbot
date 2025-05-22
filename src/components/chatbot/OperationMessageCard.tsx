@@ -172,7 +172,7 @@ export function OperationMessageCard({
                     {/* Picto tout à droite */}
                     <div className="ml-auto">
                       <button
-                        className="text-blue-600 cursor-pointer"
+                        className="text-blue-500 cursor-pointer"
                         onClick={(e) => {
                           e.stopPropagation();
                           setCurrentReason(

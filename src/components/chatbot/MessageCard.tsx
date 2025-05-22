@@ -19,7 +19,7 @@ export function MessageCard({
       transition={{ duration: 0.3 }}
       className={`p-4 w-fit mt-4 ${
         isUserMessage
-          ? "bg-[#162a48] ml-auto text-white border-none"
+          ? "bg-blue-500 ml-auto text-white border-none"
           : "bg-muted"
       }`}
     >

@@ -63,7 +63,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
         <p className="text-gray-600">Immatriculation: {registrationNumber}</p>
         <p className="text-gray-500">Kilométrage: {mileage} km</p>
         <p className="text-gray-500">Date de première immatriculation: {new Date(firstRegistrationDate).toLocaleDateString()}</p>
-        <button onClick={() => setOpen(true)} className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300">
+        <button onClick={() => setOpen(true)} className="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors duration-300">
           Voir les détails
         </button>
       </div>

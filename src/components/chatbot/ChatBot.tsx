@@ -70,10 +70,10 @@ export default function ChatBot() {
       <div
         className="
           absolute inset-0
-          bg-[url('/chatbot_bg.png')]
+          bg-[url('/chat.png')]
           bg-cover bg-center
-          brightness-75
-          opacity-65
+          brightness-65
+          opacity-55
         "
         aria-hidden="true"
       />
@@ -87,8 +87,7 @@ export default function ChatBot() {
         aria-hidden="true"
       />
 
-      {/*  ▶ Zone de chat, au-dessus du fond */}
-      <div className="relative flex-1 overflow-y-auto chat-container px-4">
+      <div className="relative flex-1 overflow-y-auto chat-container px-6 py-6">
         <div className="space-y-4">
           {messages.map((message, index) => (
             <div key={message.id} className="space-y-4">
@@ -110,8 +109,7 @@ export default function ChatBot() {
         </div>
       </div>
 
-      {/*  ▶ Input + bouton, toujours au-dessus */}
-      <div className="relative border-t pt-4 px-4 bg-transparent">
+      <div className="relative border-t pt-4 px-6 bg-transparent">
         <div className="flex gap-2">
           <Input
             placeholder="Tapez votre message…"
@@ -122,6 +120,7 @@ export default function ChatBot() {
           />
           <Button
             size="icon"
+            className="bg-blue-500 hover:bg-blue-600 text-white"
             onClick={() => handleSendMessage(prompt)}
             disabled={isSearchDisabled}
           >

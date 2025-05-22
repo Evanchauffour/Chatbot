@@ -35,7 +35,7 @@ export default function NavBar() {
               asChild
               className={`group justify-start p-6 rounded-md transition-colors ${
                 pathname === "/"
-                  ? "bg-gray-300 text-blue-600"
+                  ? "bg-gray-300 text-blue-500"
                   : "hover:bg-gray-200"
               }`}
             >
@@ -50,7 +50,7 @@ export default function NavBar() {
               asChild
               className={`group justify-start p-6 rounded-md transition-colors ${
                 pathname.startsWith("/appointments")
-                  ? "bg-gray-300 text-blue-600"
+                  ? "bg-gray-300 text-blue-500"
                   : "hover:bg-gray-200"
               }`}
             >
@@ -64,7 +64,7 @@ export default function NavBar() {
               asChild
               className={`group justify-start p-6 rounded-md transition-colors ${
                 pathname.startsWith("/vehicles")
-                  ? "bg-gray-300 text-blue-600"
+                  ? "bg-gray-300 text-blue-500"
                   : "hover:bg-gray-200"
               }`}
             >
@@ -84,7 +84,7 @@ export default function NavBar() {
           asChild
           className={`group justify-start p-6 rounded-md transition-colors ${
             pathname.startsWith("/profile")
-              ? "text-blue-600"
+              ? "text-blue-500"
               : ""
           }`}
         >
