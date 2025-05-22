@@ -212,7 +212,7 @@ export default function CreateVehicleDialog() {
             />
 
             <DialogFooter className="flex gap-2">
-              <Button variant="outline">Annuler</Button>
+              <Button variant="outline" onClick={() => setOpen(false)}>Annuler</Button>
               <Button type="submit">Ajouter</Button>
             </DialogFooter>
           </form>
