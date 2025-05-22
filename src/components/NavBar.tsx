@@ -90,7 +90,7 @@ export default function NavBar() {
         >
           <Link href="/profile">
             <User className="w-4 h-4 mr-2" />
-            {user?.firstName} {user?.lastName}
+            <span className="group-hover:text-blue-600">{user?.firstName} {user?.lastName}</span>
           </Link>
         </Button>
         <Button variant="ghost" onClick={logout} className="group">
