@@ -6,7 +6,6 @@ import React, { useEffect, useState } from 'react'
 import MapComponent from '../Map'
 import { createAppointment } from '@/actions/appointment'
 import { useChatbotStore } from '@/store/chatbot.store'
-import { useGeocoding } from '@/hooks/useGeocoding'
 
 interface Dealership {
   id: string
@@ -19,10 +18,6 @@ interface Dealership {
   zip: string
 }
 
-interface UserLocation {
-  latitude: number
-  longitude: number
-}
 
 const TIME_SLOTS = [
   "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
@@ -31,16 +26,11 @@ const TIME_SLOTS = [
 ]
 
 export default function AppointmentStep() {
-  const { operationSelected, selectedVehicle, additionalOperationSelected, addMessage, userAddress } = useChatbotStore()
-  const { getCoordinatesFromAddress } = useGeocoding()
+  const { operationSelected, selectedVehicle, additionalOperationSelected, addMessage, userCoordinates } = useChatbotStore()
   const [dealerships, setDealerships] = useState<Dealership[]>([])
   const [dealershipSelected, setDealershipSelected] = useState<string>('')
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [selectedSlot, setSelectedSlot] = useState<string>('')
-  const [userLocation, setUserLocation] = useState<UserLocation>({
-    latitude: 0,
-    longitude: 0
-  })
 
   const getNextDays = (days: number) => {
     const dates = []
@@ -54,19 +44,7 @@ export default function AppointmentStep() {
 
   useEffect(() => {
     fetchDealership()
-  }, [])
-
-  useEffect(() => {
-    const fetchUserCoordinates = async () => {
-      if (userAddress) {
-        const coordinates = await getCoordinatesFromAddress(userAddress)
-        if (coordinates) {
-          setUserLocation(coordinates)
-        }
-      }
-    }
-    fetchUserCoordinates()
-  }, [userAddress, getCoordinatesFromAddress])
+  }, [userCoordinates])
 
   const fetchDealership = async () => {
     try {
@@ -96,17 +74,42 @@ export default function AppointmentStep() {
   
 
   const handleSubmit = async () => {
-    const mergedOperations = [...operationSelected, ...additionalOperationSelected]
-    await createAppointment({
-      "appointmentDate": selectedDate.toISOString(),
-      "status": "string",
-      "dealership": `/api/dealerships/${dealershipSelected}`,
-      "supplementaryInfos": "string",
-      "carOperations": mergedOperations.map((operation) => `/api/car_operations/${operation.id}`),
-      "vehicle": `/api/vehicles/${selectedVehicle?.id}`
-    })
+    if (!dealershipSelected) {
+      addMessage("Veuillez sélectionner une concession", "general")
+      return
+    }
 
-    addMessage("Votre rendez-vous a été créé avec succès ! Vous recevrez un email avec les informations du rendez-vous.", "general")
+    if (!selectedSlot) {
+      addMessage("Veuillez sélectionner un créneau horaire", "general")
+      return
+    }
+
+    if (!selectedVehicle) {
+      addMessage("Veuillez sélectionner un véhicule", "general")
+      return
+    }
+
+    const mergedOperations = [...operationSelected, ...additionalOperationSelected]
+    if (mergedOperations.length === 0) {
+      addMessage("Veuillez sélectionner au moins une opération", "general")
+      return
+    }
+
+    try {
+      await createAppointment({
+        "appointmentDate": selectedDate.toISOString(),
+        "status": "pending",
+        "dealership": `/api/dealerships/${dealershipSelected}`,
+        "supplementaryInfos": `Créneau horaire : ${selectedSlot}`,
+        "carOperations": mergedOperations.map((operation) => `/api/car_operations/${operation.id}`),
+        "vehicle": `/api/vehicles/${selectedVehicle.id}`
+      })
+
+      addMessage("Votre rendez-vous a été créé avec succès ! Vous recevrez un email avec les informations du rendez-vous.", "general")
+    } catch (error) {
+      console.error('Erreur lors de la création du rendez-vous:', error)
+      addMessage("Une erreur est survenue lors de la création du rendez-vous. Veuillez réessayer.", "general")
+    }
   }
 
   return (
@@ -156,8 +159,10 @@ export default function AppointmentStep() {
           </Card>
         </aside>
         <Card className='p-4 flex-1'>
-          <MapComponent dealerships={dealerships} dealershipSelected={dealershipSelected} userLocation={userLocation}/>
-        </Card>
+          {userCoordinates && userCoordinates.latitude !== 0 && userCoordinates.longitude !== 0 && (
+            <MapComponent dealerships={dealerships} dealershipSelected={dealershipSelected} userLocation={userCoordinates}/>
+          )}
+        </Card> 
       </div>
       <Button className='w-fit ml-auto' onClick={handleSubmit}>Valider</Button>
     </div>

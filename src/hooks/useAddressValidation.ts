@@ -1,3 +1,5 @@
+"use client"
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import debounce from 'lodash.debounce'
 
@@ -11,63 +13,60 @@ interface AddressSuggestion {
 }
 
 interface PhotonFeature {
+  type: string
   properties: AddressSuggestion
+  geometry: {
+    type: string
+    coordinates: [number, number] // [longitude, latitude]
+  }
 }
 
 interface PhotonResponse {
+  type: string
   features: PhotonFeature[]
+}
+
+interface ValidationResult {
+  isValid: boolean;
+  coordinates: { latitude: number; longitude: number } | null;
 }
 
 export const useAddressValidation = () => {
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [searchTerm, setSearchTerm] = useState("")
+  const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null)
   const addressFromSuggestion = useRef(false)
   const userTypedAddress = useRef(false)
   const addressRef = useRef<HTMLDivElement>(null)
 
-  const validateAddressWithPhoton = async (address: string): Promise<boolean> => {
-    if (addressFromSuggestion.current) {
-      return true
-    }
-
-    if (!address) return false
+  const validateAddressWithPhoton = async (address: string): Promise<ValidationResult> => {
+    if (!address) return { isValid: false, coordinates: null }
 
     try {
-      const res = await fetch(
-        `https://photon.komoot.io/api/?q=${encodeURIComponent(address)}&limit=1&lang=fr`
-      )
+      const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(address)}&limit=1&lang=fr`
+      const res = await fetch(url)
       const data: PhotonResponse = await res.json()
 
-      if (!data.features || data.features.length === 0) return false
+      if (!data.features || data.features.length === 0) {
+        return { isValid: false, coordinates: null }
+      }
 
-      const props = data.features[0].properties
+      const feature = data.features[0]
+      const coords = feature.geometry.coordinates
 
-      const hasCompleteInfo =
-        props.housenumber &&
-        (props.street || props.name) &&
-        props.postcode &&
-        props.city &&
-        props.country
-
-      if (!hasCompleteInfo) return false
-
-      const normalize = (str: string) =>
-        str.toLowerCase().replace(/\s+/g, " ").trim()
-
-      const formattedAddress = [
-        props.housenumber,
-        props.street || props.name,
-        props.postcode,
-        props.city,
-        props.country
-      ]
-        .filter(Boolean)
-        .join(", ")
-
-      return normalize(formattedAddress) === normalize(address)
+      const newCoordinates = {
+        latitude: coords[1],
+        longitude: coords[0]
+      }
+      
+      setCoordinates(newCoordinates)
+      return { 
+        isValid: true, 
+        coordinates: newCoordinates 
+      }
     } catch (err) {
-      console.error("Erreur lors de la validation d'adresse :", err)
-      return false
+      console.error("Erreur lors de la récupération des coordonnées :", err)
+      return { isValid: false, coordinates: null }
     }
   }
 
@@ -128,6 +127,7 @@ export const useAddressValidation = () => {
     addressFromSuggestion,
     userTypedAddress,
     addressRef,
-    validateAddressWithPhoton
+    validateAddressWithPhoton,
+    coordinates
   }
 } 

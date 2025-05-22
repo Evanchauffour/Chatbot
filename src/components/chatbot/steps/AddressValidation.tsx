@@ -4,7 +4,6 @@ import React from 'react'
 import { useUserStore } from '@/store/user.store'
 import { Button } from '@/components/ui/button'
 import { useAddressValidation } from '@/hooks/useAddressValidation'
-import { useGeocoding } from '@/hooks/useGeocoding'
 import {
   Form,
   FormControl,
@@ -24,7 +23,6 @@ interface AddressFormData {
 export default function AddressValidation() {
   const { setOperationStep, setUserAddress, setUserCoordinates } = useChatbotStore()
   const { user } = useUserStore()
-  const { getCoordinatesFromAddress } = useGeocoding()
   const form = useForm<AddressFormData>({
     defaultValues: {
       address: user?.address || "",
@@ -41,11 +39,15 @@ export default function AddressValidation() {
   } = useAddressValidation()
 
   const handleSubmit = async (data: AddressFormData) => {
-    const coordinates = await getCoordinatesFromAddress(data.address)
-    if (coordinates) {
-      setUserAddress(data.address)
-      setUserCoordinates(coordinates)
-      setOperationStep("appointment_scheduling")
+    try {
+      const result = await validateAddressWithPhoton(data.address)
+      if (result.coordinates) {
+        setUserAddress(data.address)
+        setUserCoordinates(result.coordinates)
+        setOperationStep("appointment_scheduling")
+      }
+    } catch (error) {
+      console.error(error)
     }
   }
 
@@ -60,8 +62,8 @@ export default function AddressValidation() {
             name="address"
             rules={{
               validate: async (value) => {
-                const isValid = await validateAddressWithPhoton(value)
-                return isValid || "Adresse introuvable. Veuillez choisir une adresse valide."
+                const result = await validateAddressWithPhoton(value)
+                return result.coordinates ? true : "Impossible de trouver les coordonnées pour cette adresse."
               }
             }}
             render={({ field }) => (
