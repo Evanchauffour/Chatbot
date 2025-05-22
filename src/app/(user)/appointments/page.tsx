@@ -1,62 +1,69 @@
-"use client"
+"use client";
 
-import AppointmentCard from '@/components/appointments/AppointmentCard'
-import React, { useEffect } from 'react'
-import { useState } from 'react'
-import dayjs from 'dayjs'
+import AppointmentCard from "@/components/appointments/AppointmentCard";
+import React, { useEffect } from "react";
+import { useState } from "react";
+import dayjs from "dayjs";
 
 interface Appointment {
-  id: string
-  appointmentDate: Date
+  id: string;
+  appointmentDate: Date;
   dealership: {
-    name: string
-    city: string
-    address: string
-  }
+    name: string;
+    city: string;
+    address: string;
+  };
   vehicle: {
-    id: string
-    brand: string
-    model: string
-  }
+    id: string;
+    brand: string;
+    model: string;
+  };
 }
 
 export default function AppointmentPage() {
-  const [appointments, setAppointments] = useState<Appointment[]>([])
-  const today = dayjs().toDate()
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const today = dayjs().toDate();
 
   const fetchAppointments = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/user/appointments', {
-        method: 'GET',
-        credentials: 'include'
-      })
-      const data = await response.json()
-      const sortedData = data.sort((a: Appointment, b: Appointment) => 
-        dayjs(b.appointmentDate).valueOf() - dayjs(a.appointmentDate).valueOf()
-      )
-      setAppointments(sortedData)
+      const response = await fetch(
+        "http://localhost:8000/api/user/appointments",
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+      const data = await response.json();
+      const sortedData = data.sort(
+        (a: Appointment, b: Appointment) =>
+          dayjs(b.appointmentDate).valueOf() -
+          dayjs(a.appointmentDate).valueOf()
+      );
+      setAppointments(sortedData);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchAppointments()
-  }, [])
+    fetchAppointments();
+  }, []);
 
   return (
-    <div className="space-y-4">
-      <div className='grid grid-cols-2 gap-4'>
+    <div className="space-y-4 p-4">
+      <div className="grid grid-cols-2 gap-4">
         {appointments.map((appointment) => (
           <AppointmentCard
             key={appointment.id}
             dealership={appointment.dealership}
             date={appointment.appointmentDate}
             vehicle={appointment.vehicle}
-            isPast={dayjs(appointment.appointmentDate).startOf('day').isBefore(dayjs(today).startOf('day'))}
+            isPast={dayjs(appointment.appointmentDate)
+              .startOf("day")
+              .isBefore(dayjs(today).startOf("day"))}
           />
         ))}
       </div>
     </div>
-  )
+  );
 }
