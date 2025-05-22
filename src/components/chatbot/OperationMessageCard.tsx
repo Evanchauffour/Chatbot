@@ -15,6 +15,7 @@ import { Button } from "../ui/button";
 import OperationsSelection from "./steps/OperationsSelection";
 import ModalReasonSuggest from "./modal/ModalReasonSuggest";
 import { FaInfoCircle } from "react-icons/fa";
+import { Skeleton } from "../ui/skeleton";
 
 interface OperationMessageCardProps {
   message: string;
@@ -35,6 +36,7 @@ export function OperationMessageCard({
     additionalOperation,
     selectAdditionalOperation,
     additionalOperationSelected,
+    isAdditionalOperationLoading,
   } = useChatbotStore();
   const [modalOpen, setModalOpen] = useState(false);
   const [currentReason, setCurrentReason] = useState<string>("");
@@ -83,8 +85,28 @@ export function OperationMessageCard({
           selectVehicle={(id) => {
             storeSelectVehicle(id);
             setOperationStep("additional_operation_selection");
+            setTimeout(() => {
+              const container = document.querySelector('.chat-container');
+              if (container) {
+                container.scrollTo({
+                  top: container.scrollHeight,
+                  behavior: 'smooth'
+                });
+              }
+            }, 100);
           }}
-          onAddVehicle={() => setOperationStep(OPTIONAL_STEP)}
+          onAddVehicle={() => {
+            setOperationStep(OPTIONAL_STEP)
+            setTimeout(() => {
+              const container = document.querySelector('.chat-container');
+              if (container) {
+                container.scrollTo({
+                  top: container.scrollHeight,
+                  behavior: 'smooth'
+                });
+              }
+            }, 100);
+          }}
         />
       ),
     },
@@ -98,7 +120,18 @@ export function OperationMessageCard({
             setOperationStep("vehicle_selection");
             storeSelectVehicle(created.id);
           }}
-          onCancel={() => setOperationStep("vehicle_selection")}
+          onCancel={() => {
+            setOperationStep("vehicle_selection")
+            setTimeout(() => {
+              const container = document.querySelector('.chat-container');
+              if (container) {
+                container.scrollTo({
+                  top: container.scrollHeight,
+                  behavior: 'smooth'
+                });
+              }
+            }, 100);
+          }}
         />
       ),
     },
@@ -110,47 +143,64 @@ export function OperationMessageCard({
             Sélectionnez les services supplémentaires
           </h3>
           <div className="grid grid-cols-3 gap-4 w-full">
-            {additionalOperation.map((operation) => (
-              <Card
-                key={operation.operation}
-                className={`p-4 cursor-pointer transition-colors ${
-                  additionalOperationSelected.includes(operation)
-                    ? "border-blue-500 bg-blue-50"
-                    : ""
-                }`}
-                onClick={() => {
-                  selectAdditionalOperation(operation);
-                  setOperationStep("additional_operation_selection");
-                }}
-              >
-                <div className="flex items-center gap-4">
-                  <Checkbox checked={additionalOperationSelected.includes(operation)} />
-                  <div className="flex flex-col">
-                    <p className="font-medium">{operation.operation}</p>
-                    <p className="text-sm text-gray-500">{operation.price} €</p>
-                  </div>
+            {isAdditionalOperationLoading ? (
+              Array(3).fill(0).map((_, index) => (
+                <Skeleton key={index} className="h-24 w-full" />
+              ))
+            ) : (
+              additionalOperation.map((operation) => (
+                <Card
+                  key={operation.operation}
+                  className={`p-4 cursor-pointer transition-colors ${
+                    additionalOperationSelected.includes(operation)
+                      ? "border-blue-500 bg-blue-50"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    selectAdditionalOperation(operation);
+                    setOperationStep("additional_operation_selection");
+                  }}
+                >
+                  <div className="flex items-center gap-4">
+                    <Checkbox checked={additionalOperationSelected.includes(operation)} />
+                    <div className="flex flex-col">
+                      <p className="font-medium">{operation.operation}</p>
+                      <p className="text-sm text-gray-500">{operation.price} €</p>
+                    </div>
 
-                  {/* Picto tout à droite */}
-                  <div className="ml-auto">
-                    <button
-                      className="text-blue-600 cursor-pointer"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setCurrentReason(
-                          operation.reason || "Pas de raison fournie"
-                        );
-                        setModalOpen(true);
-                      }}
-                    >
-                      <FaInfoCircle size={20} />
-                    </button>
+                    {/* Picto tout à droite */}
+                    <div className="ml-auto">
+                      <button
+                        className="text-blue-600 cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentReason(
+                            operation.reason || "Pas de raison fournie"
+                          );
+                          setModalOpen(true);
+                        }}
+                      >
+                        <FaInfoCircle size={20} />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              ))
+            )}
           </div>
           <Button
-            onClick={() => setOperationStep("appointment_scheduling")}
+            onClick={() => {
+              setOperationStep("appointment_scheduling")
+              setTimeout(() => {
+                const container = document.querySelector('.chat-container');
+                if (container) {
+                  container.scrollTo({
+                    top: container.scrollHeight,
+                    behavior: 'smooth'
+                  });
+                }
+              }, 100);
+            }}
             className="w-fit ml-auto"
           >
             <MapPin className="h-4 w-4" />

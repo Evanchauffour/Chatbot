@@ -23,6 +23,8 @@ interface ChatbotStore {
   operationSelected: AdditionalOperation[];
   additionalOperationSelected: AdditionalOperation[];
   isSearchDisabled: boolean;
+  isVehicleLoading: boolean;
+  isAdditionalOperationLoading: boolean;
   addMessage: (content: string, type: MessageType) => void;
   addUserMessage: (content: string) => void;
   clearMessages: () => void;
@@ -56,6 +58,8 @@ export const useChatbotStore = create<ChatbotStore>((set) => ({
   operationSelected: [],
   additionalOperationSelected: [],
   isSearchDisabled: false,
+  isVehicleLoading: false,
+  isAdditionalOperationLoading: false,
   addMessage: (content: string, type: MessageType) =>
     set((state) => ({
       messages: [
@@ -129,6 +133,7 @@ export const useChatbotStore = create<ChatbotStore>((set) => ({
     })),
 
   fetchVehicles: async () => {
+    set({ isVehicleLoading: true });
     try {
       const response = await fetch("http://localhost:8000/api/user/vehicles", {
         credentials: "include",
@@ -137,6 +142,8 @@ export const useChatbotStore = create<ChatbotStore>((set) => ({
       set({ vehicles: data });
     } catch (error) {
       console.error("Erreur lors de la récupération des véhicules:", error);
+    } finally {
+      set({ isVehicleLoading: false });
     }
   },
 
@@ -145,6 +152,7 @@ export const useChatbotStore = create<ChatbotStore>((set) => ({
     operation: string = "Vidange"
   ) => {
     try {
+      set({ isAdditionalOperationLoading: true });
       const response = await fetch(`http://localhost:8000/api/suggest-addons`, {
         credentials: "include",
         method: "POST",
@@ -168,6 +176,8 @@ export const useChatbotStore = create<ChatbotStore>((set) => ({
         "Erreur lors de la récupération des informations du véhicule:",
         error
       );
+    } finally {
+      set({ isAdditionalOperationLoading: false });
     }
   },
 

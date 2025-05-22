@@ -7,7 +7,8 @@ import { Card } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import dayjs from "dayjs";
 import type { Vehicle } from "@/types/chatbot";
-
+import { useChatbotStore } from "@/store/chatbot.store";
+import { Skeleton } from "@/components/ui/skeleton";
 type VehicleSelectionStepProps = {
   vehicles: Vehicle[];
   selectVehicle: (vehicleId: string) => void;
@@ -19,6 +20,7 @@ export default function VehicleSelectionStep({
   selectVehicle,
   onAddVehicle,
 }: VehicleSelectionStepProps) {
+  const { isVehicleLoading } = useChatbotStore()
   return (
     <div className="space-y-4 w-full">
       <div className="flex justify-between items-center w-full">
@@ -29,9 +31,12 @@ export default function VehicleSelectionStep({
         </Button>
       </div>
       <div className="space-y-2">
-        {vehicles.map((vehicle) => (
-          <Card
-            key={vehicle.id}
+        {isVehicleLoading ? (
+          <Skeleton className="h-10 w-10 rounded-full" />
+        ) : (
+          vehicles.map((vehicle) => (
+            <Card
+              key={vehicle.id}
             className={`p-4 cursor-pointer transition-colors ${
               vehicle.selected ? "border-blue-500 bg-blue-50" : ""
             }`}
@@ -49,8 +54,9 @@ export default function VehicleSelectionStep({
                 </p>
               </div>
             </div>
-          </Card>
-        ))}
+            </Card>
+          ))
+        )}
       </div>
     </div>
   );

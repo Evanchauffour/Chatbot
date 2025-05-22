@@ -1,7 +1,8 @@
 import React from 'react'
 import { Button } from './ui/button'
 import Link from 'next/link'
-import { Calendar, Car, House, User } from 'lucide-react'
+import { Calendar, Car, House, LogOut, User } from 'lucide-react'
+import { logout } from '@/actions/auth'
 
 export default function NavBar() {
   return (
@@ -28,12 +29,15 @@ export default function NavBar() {
           </Button>
         </ul>
       </nav>
-      <Button variant='ghost' asChild className='justify-start hover:bg-gray-200 p-6 rounded-md'>
-        <Link href='/account'>
-          <User className='w-4 h-4 mr-2' />
-          Mon compte
-        </Link>
-      </Button>
+      <div className='flex justify-between items-center'>
+        <Button variant='ghost' asChild className='justify-start hover:bg-gray-200 p-6 rounded-md'>
+          <Link href='/account'>
+            <User className='w-4 h-4 mr-2' />
+            Mon compte
+          </Link>
+        </Button>
+        <Button variant='ghost' onClick={logout}><LogOut className='w-4 h-4 mr-2' /></Button>
+      </div>
     </aside>
   )
 }

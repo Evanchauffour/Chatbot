@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { AdditionalOperation } from "@/types/chatbot";
 import { useChatbotStore } from "@/store/chatbot.store";
+import { useEffect } from "react";
 // OperationsSelection.tsx
 interface OperationsSelectionProps {
   operations: AdditionalOperation[];
@@ -26,8 +27,28 @@ export default function OperationsSelection({
     selectOperation(operation);
   };
 
+  useEffect(() => {
+    const container = document.querySelector('.chat-container');
+    if (container) {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  }, []);
+  
+
   const handleNext = () => {
     setOperationStep("vehicle_selection");
+    setTimeout(() => {
+      const container = document.querySelector('.chat-container');
+      if (container) {
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   };
 
   return (

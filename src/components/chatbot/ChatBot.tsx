@@ -8,11 +8,12 @@ import { MessageCard } from './MessageCard'
 import { OperationMessageCard } from './OperationMessageCard'
 import { useChatbotStore } from '@/store/chatbot.store'
 import { AdditionalOperation } from '@/types/chatbot'
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function   ChatBot() {
   const { messages, addMessage, userMessage, addUserMessage, isSearchDisabled, setOperationsList, setOperationStep } = useChatbotStore()
-  
   const [prompt, setPrompt] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     // Message de bienvenue initial
@@ -22,6 +23,9 @@ export default function   ChatBot() {
   }, [])
 
   async function handleSendMessage(message: string) {
+    addUserMessage(message)
+    setIsLoading(true)
+    setPrompt('')
     try {
       const response = await fetch("http://localhost:8000/api/generate-text", {
         method: "POST",
@@ -38,8 +42,6 @@ export default function   ChatBot() {
 
       const data = await response.json()
       addMessage(data.content, data.type)
-      addUserMessage(message)
-      setPrompt('')
 
       if (Array.isArray(data.services) && data.services.length > 0) {
         setOperationsList(data.services as AdditionalOperation[]);
@@ -48,12 +50,14 @@ export default function   ChatBot() {
 
     } catch (error) {
       console.error("Erreur d'inscription:", error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
     <div className="flex flex-col h-full overflow-hidden pb-4">
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto chat-container">
         <div className="space-y-4">
           {messages.map((message, index) => (
             <div key={message.id} className="space-y-4">
@@ -68,6 +72,9 @@ export default function   ChatBot() {
               )}
             </div>
           ))}
+          {isLoading && (
+            <Skeleton className="h-10 w-10 rounded-full" />
+          )}
         </div>
       </div>
       
