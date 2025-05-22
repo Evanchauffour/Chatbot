@@ -27,6 +27,17 @@ export default async function VehiclePage() {
 
   const vehicles: Vehicle[] = await response.json()
 
+  console.log(vehicles);
+  
+
+  if(vehicles.length === 0) {
+    return (
+      <div className='flex flex-col items-end gap-4'>
+        <p className='text-2xl font-bold'>Aucun véhicule trouvé</p>
+      </div>
+    )
+  }
+
   return (
     <div className='flex flex-col items-end gap-4'>
       <CreateVehicleDialog />
