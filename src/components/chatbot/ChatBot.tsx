@@ -62,7 +62,7 @@ export default function ChatBot() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col gap-4 flex-1 overflow-hidden">
       <div className="flex-1 overflow-y-auto space-y-4">
         {/* 1) On affiche uniquement les général/user ici */}
         {messages.map((msg, idx) =>
