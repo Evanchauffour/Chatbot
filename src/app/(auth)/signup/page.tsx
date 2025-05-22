@@ -22,6 +22,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { useCallback, useEffect, useRef, useState } from "react"
+import debounce from "lodash.debounce"
+
 
 interface SignupFormData {
   email: string
@@ -34,6 +37,9 @@ interface SignupFormData {
 }
 
 export default function SignupPage() {
+  const addressFromSuggestion = useRef(false)
+  const userTypedAddress = useRef(false)
+
   const router = useRouter()
   const form = useForm<SignupFormData>({
     defaultValues: {
@@ -67,6 +73,112 @@ export default function SignupPage() {
       // Vous pouvez ajouter ici la gestion des erreurs dans le formulaire si nécessaire
     }
   }
+  const normalize = (str: string) =>
+    str.toLowerCase().replace(/\s+/g, " ").trim()
+
+  const validateAddressWithPhoton = async (address: string) => {
+    // ✅ Si l'adresse vient d'une suggestion, on l'accepte directement
+    if (addressFromSuggestion.current) {
+      return true // ne PAS le reset ici ❌
+    }
+
+    if (!address) return false
+
+    try {
+      const res = await fetch(
+        `https://photon.komoot.io/api/?q=${encodeURIComponent(address)}&limit=1&lang=fr`
+      )
+      const data = await res.json()
+
+      if (!data.features || data.features.length === 0) return false
+
+      const props = data.features[0].properties
+
+      const hasCompleteInfo =
+        props.housenumber &&
+        (props.street || props.name) &&
+        props.postcode &&
+        props.city &&
+        props.country
+
+      if (!hasCompleteInfo) return false
+
+      const normalize = (str: string) =>
+        str.toLowerCase().replace(/\s+/g, " ").trim()
+
+      const formattedAddress = [
+        props.housenumber,
+        props.street || props.name,
+        props.postcode,
+        props.city,
+        props.country
+      ]
+        .filter(Boolean)
+        .join(", ")
+
+      return normalize(formattedAddress) === normalize(address)
+    } catch (err) {
+      console.error("Erreur lors de la validation d'adresse :", err)
+      return false
+    }
+  }
+
+
+
+
+  const [suggestions, setSuggestions] = useState<string[]>([])
+  const [searchTerm, setSearchTerm] = useState("")
+
+  const fetchSuggestions = useCallback(
+    debounce(async (q: string) => {
+      try {
+        const res = await fetch(
+          `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=5&lang=fr`
+        )
+        const data = await res.json()
+        const labels = data.features.map((f: any) => {
+          const props = f.properties
+
+          const street = props.street || props.name || ""
+          const housenumber = props.housenumber ? `${props.housenumber} ` : ""
+
+          return [
+            `${housenumber}${street}`.trim(),
+            props.postcode,
+            props.city,
+            props.country
+          ].filter(Boolean).join(", ")
+        })
+        setSuggestions(labels)
+      } catch (err) {
+        console.error("Erreur d'autocomplétion Photon :", err)
+      }
+    }, 400),
+    []
+  )
+
+  useEffect(() => {
+    if (!searchTerm) {
+      setSuggestions([])
+      return
+    }
+    fetchSuggestions(searchTerm)
+  }, [searchTerm, fetchSuggestions])
+  const addressRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (addressRef.current && !addressRef.current.contains(event.target as Node)) {
+        setSuggestions([]) // ferme les suggestions
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
+
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center p-4 sm:p-6 md:p-8">
@@ -78,8 +190,21 @@ export default function SignupPage() {
           </CardDescription>
         </CardHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <CardContent className="grid gap-4">
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault()
+              const isValid = await form.trigger()
+
+              // 🧼 On reset le flag après usage
+
+              if (isValid) {
+                onSubmit(form.getValues())
+
+              }
+            }}
+            className="space-y-4"
+          >            
+          <CardContent className="grid gap-4">
               <FormField
                 control={form.control}
                 name="title"
@@ -135,24 +260,49 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="address"
+                rules={{
+                  validate: async (value) => {
+                    const isValid = await validateAddressWithPhoton(value)
+                    return isValid || "Adresse introuvable. Veuillez choisir une adresse valide."
+                  }
+                }}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Adresse</FormLabel>
                     <FormControl>
-                      <Input placeholder="123 rue de Paris" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="phoneNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Numéro de téléphone</FormLabel>
-                    <FormControl>
-                      <Input placeholder="0123456789" {...field} />
+                      <div className="relative" ref={addressRef}>
+                        <Input
+                          placeholder="123 rue de Paris"
+                          {...field}
+                          value={field.value}
+                          onChange={(e) => {
+                            field.onChange(e)
+                            setSearchTerm(e.target.value)
+                          }}
+                          autoComplete="off"
+                        />
+                        {suggestions.length > 0 && (
+                          <ul className="absolute z-10 mt-1 w-full bg-white text-black border border-gray-300 rounded shadow-md max-h-48 overflow-y-auto text-sm">
+                            {suggestions.map((suggestion, index) => (
+                              <li
+                                key={index}
+                                onClick={() => {
+                                  addressFromSuggestion.current = true
+                                  userTypedAddress.current = false
+                                  form.setValue("address", suggestion)
+                                  form.trigger("address")
+                                  setSearchTerm(suggestion)
+                                  setSuggestions([])
+                                }}
+                                
+                                className="cursor-pointer px-3 py-2 hover:bg-gray-100"
+                              >
+                                {suggestion}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
