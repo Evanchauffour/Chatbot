@@ -33,6 +33,7 @@ export interface TimeSlot {
 }
 
 export type OperationStep =
+  | "start"
   | "operations_selection"
   | "vehicle_selection"
   | "additional_add_vehicle"
@@ -55,4 +56,5 @@ export interface AdditionalOperation {
   additionnal_comment?: string | null;
   time_unit: string;
   price: string;
+  reason: string;
 }

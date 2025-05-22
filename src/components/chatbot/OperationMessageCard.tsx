@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { MapPin, Wrench } from "lucide-react";
 import { MessageCard } from "./MessageCard";
@@ -14,6 +14,8 @@ import { Checkbox } from "../ui/checkbox";
 import AppointmentStep from "./steps/AppointmentStep";
 import { Button } from "../ui/button";
 import OperationsSelection from "./steps/OperationsSelection";
+import ModalReasonSuggest from "./modal/ModalReasonSuggest";
+import { FaInfoCircle } from "react-icons/fa";
 
 interface OperationMessageCardProps {
   message: string;
@@ -36,6 +38,8 @@ export function OperationMessageCard({
     selectOperation,
     operationSelected,
   } = useChatbotStore();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [currentReason, setCurrentReason] = useState<string>("");
 
   useEffect(() => {
     switch (operationState.step) {
@@ -126,17 +130,36 @@ export function OperationMessageCard({
                   setOperationStep("additional_operation_selection");
                 }}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
                   <Checkbox checked={operationSelected.includes(operation)} />
-                  <div>
+                  <div className="flex flex-col">
                     <p className="font-medium">{operation.operation}</p>
                     <p className="text-sm text-gray-500">{operation.price} €</p>
+                  </div>
+
+                  {/* Picto tout à droite */}
+                  <div className="ml-auto">
+                    <button
+                      className="text-blue-600 cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentReason(
+                          operation.reason || "Pas de raison fournie"
+                        );
+                        setModalOpen(true);
+                      }}
+                    >
+                      <FaInfoCircle size={20} />
+                    </button>
                   </div>
                 </div>
               </Card>
             ))}
           </div>
-          <Button onClick={() => setOperationStep('appointment_scheduling')} className="w-fit ml-auto">
+          <Button
+            onClick={() => setOperationStep("appointment_scheduling")}
+            className="w-fit ml-auto"
+          >
             <MapPin className="h-4 w-4" />
             <p>Choisir un garage</p>
           </Button>
@@ -145,9 +168,7 @@ export function OperationMessageCard({
     },
     {
       id: "appointment_scheduling" as OperationStep,
-      render: () => (
-        <AppointmentStep />
-      ),
+      render: () => <AppointmentStep />,
     },
   ];
 
@@ -173,6 +194,11 @@ export function OperationMessageCard({
           </div>
         </Card>
       ))}
+      <ModalReasonSuggest
+        isOpen={modalOpen}
+        reason={currentReason}
+        onClose={() => setModalOpen(false)}
+      />
     </div>
   );
 }
