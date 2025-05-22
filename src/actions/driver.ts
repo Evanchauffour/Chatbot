@@ -28,7 +28,6 @@ export async function createDriver(data: DriverData) {
   
   
   if (!response.ok) {
-    console.log(response);
     throw new Error('Failed to create driver');
   }
 

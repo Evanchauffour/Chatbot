@@ -82,9 +82,13 @@ export default function NavBar() {
         <Button
           variant="ghost"
           asChild
-          className="justify-start hover:text-blue-600"
+          className={`group justify-start p-6 rounded-md transition-colors ${
+            pathname.startsWith("/profile")
+              ? "text-blue-600"
+              : ""
+          }`}
         >
-          <Link href="/account">
+          <Link href="/profile">
             <User className="w-4 h-4 mr-2" />
             {user?.firstName} {user?.lastName}
           </Link>

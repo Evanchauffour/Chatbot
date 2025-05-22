@@ -51,7 +51,8 @@ export default function AppointmentPage() {
 
   return (
     <div className="space-y-4 p-4">
-      <div className="grid grid-cols-2 gap-4">
+      <h1 className="text-2xl font-bold mb-4 text-center">Liste de mes rendez-vous</h1>
+      <div className="grid grid-cols-2 gap-4 mt-10">
         {appointments.map((appointment) => (
           <AppointmentCard
             key={appointment.id}

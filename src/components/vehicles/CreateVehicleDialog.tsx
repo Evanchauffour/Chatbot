@@ -41,7 +41,6 @@ export default function CreateVehicleDialog() {
   const [isCurrentDriver, setIsCurrentDriver] = useState(true);
   const [driversDialogOpen, setDriversDialogOpen] = useState(false);
   const driversSelected = useDriversStore((state) => state.drivers);
-  console.log(driversSelected);
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -71,7 +70,7 @@ export default function CreateVehicleDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <div className="p-4">
         <DialogTrigger asChild>
-          <Button className="w-fit">
+          <Button className="w-fit hover:bg-blue-600 hover:text-white">
             <Plus className="w-4 h-4 mr-2" /> Ajouter un véhicule
           </Button>
         </DialogTrigger>

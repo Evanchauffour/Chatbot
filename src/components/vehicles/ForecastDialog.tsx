@@ -57,7 +57,6 @@ export default function ForecastDialog({
         }
 
         const data = await res.json();
-        console.log("Prévisions:", data);
 
         if (data.error) {
           setError(data.error);

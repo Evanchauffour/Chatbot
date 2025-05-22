@@ -100,7 +100,6 @@ export default function DriversDialog({ open, onOpenChange, onDriverSelect, onSu
   const handleCreateDriver = async (data: FormValues) => {
     try {
       const newDriver = await createDriver(data)
-      console.log(newDriver);
       setDriversSelected([...drivers, newDriver])
       setIsCreating(false)
       form.reset()

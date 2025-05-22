@@ -41,8 +41,6 @@ export default function SigninPage() {
         body: JSON.stringify(data),
         credentials: 'include',
       })
-
-      console.log(response);
       
 
       if (!response.ok) {

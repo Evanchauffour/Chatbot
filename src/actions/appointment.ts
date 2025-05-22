@@ -30,8 +30,6 @@ export async function createAppointment(data: AppointmentData) {
       vehicle: data.vehicle
     }),
   });  
-
-  console.log(response);
   
   const json = await response.json();
 
