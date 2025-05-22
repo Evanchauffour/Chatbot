@@ -1,10 +1,15 @@
+"use client"
+
 import React from 'react'
 import { Button } from './ui/button'
 import Link from 'next/link'
 import { Calendar, Car, House, LogOut, User } from 'lucide-react'
 import { logout } from '@/actions/auth'
-
+import { useFetchUser } from '@/hooks/useFetchUser'
+import { useUserStore } from '@/store/user.store'
 export default function NavBar() {
+  useFetchUser()
+  const { user } = useUserStore()
   return (
     <aside className='w-64 h-full bg-gray-100 flex flex-col justify-between'>
       <nav>
@@ -33,7 +38,7 @@ export default function NavBar() {
         <Button variant='ghost' asChild className='justify-start hover:bg-gray-200 p-6 rounded-md'>
           <Link href='/account'>
             <User className='w-4 h-4 mr-2' />
-            Mon compte
+            {user?.firstName} {user?.lastName}
           </Link>
         </Button>
         <Button variant='ghost' onClick={logout}><LogOut className='w-4 h-4 mr-2' /></Button>

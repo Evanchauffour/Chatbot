@@ -38,6 +38,7 @@ export type OperationStep =
   | "vehicle_selection"
   | "additional_add_vehicle"
   | "additional_operation_selection"
+  | "address_validation"
   | "appointment_scheduling";
 
 export interface OperationState {

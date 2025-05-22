@@ -10,6 +10,11 @@ import {
 } from "@/types/chatbot";
 import dayjs from "dayjs";
 
+interface Coordinates {
+  latitude: number;
+  longitude: number;
+}
+
 interface ChatbotStore {
   messages: ChatMessage[];
   userMessage: UserMessage[];
@@ -25,6 +30,8 @@ interface ChatbotStore {
   isSearchDisabled: boolean;
   isVehicleLoading: boolean;
   isAdditionalOperationLoading: boolean;
+  userAddress: string;
+  userCoordinates: Coordinates | null;
   addMessage: (content: string, type: MessageType) => void;
   addUserMessage: (content: string) => void;
   clearMessages: () => void;
@@ -40,6 +47,8 @@ interface ChatbotStore {
   ) => Promise<void>;
   fetchTimeSlots: () => Promise<void>;
   disableSearch: () => void;
+  setUserAddress: (address: string) => void;
+  setUserCoordinates: (coordinates: Coordinates) => void;
   resetStore: () => void;
 }
 
@@ -49,6 +58,8 @@ export const useChatbotStore = create<ChatbotStore>((set) => ({
   operationState: {
     step: "start",
   },
+  userAddress: "",
+  userCoordinates: null,
   operationsList: [],
   setOperationsList: (ops) => set({ operationsList: ops }),
   vehicles: [],
@@ -190,6 +201,8 @@ export const useChatbotStore = create<ChatbotStore>((set) => ({
     ];
     set({ timeSlots: mockTimeSlots });
   },
+  setUserAddress: (address: string) => set({ userAddress: address }),
+  setUserCoordinates: (coordinates: Coordinates) => set({ userCoordinates: coordinates }),
   disableSearch: () => set({ isSearchDisabled: true }),
   resetStore: () =>
     set({
@@ -212,5 +225,6 @@ export const useChatbotStore = create<ChatbotStore>((set) => ({
       selectedVehicle: null,
       operationSelected: [],
       isSearchDisabled: false,
+      userCoordinates: null,
     }),
 }));

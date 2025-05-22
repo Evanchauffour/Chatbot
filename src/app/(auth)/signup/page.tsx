@@ -73,8 +73,6 @@ export default function SignupPage() {
       // Vous pouvez ajouter ici la gestion des erreurs dans le formulaire si nécessaire
     }
   }
-  const normalize = (str: string) =>
-    str.toLowerCase().replace(/\s+/g, " ").trim()
 
   const validateAddressWithPhoton = async (address: string) => {
     // ✅ Si l'adresse vient d'une suggestion, on l'accepte directement

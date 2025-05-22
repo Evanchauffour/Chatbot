@@ -16,6 +16,7 @@ import OperationsSelection from "./steps/OperationsSelection";
 import ModalReasonSuggest from "./modal/ModalReasonSuggest";
 import { FaInfoCircle } from "react-icons/fa";
 import { Skeleton } from "../ui/skeleton";
+import AddressValidation from "./steps/AddressValidation";
 
 interface OperationMessageCardProps {
   message: string;
@@ -190,7 +191,7 @@ export function OperationMessageCard({
           </div>
           <Button
             onClick={() => {
-              setOperationStep("appointment_scheduling")
+              setOperationStep("address_validation")
               setTimeout(() => {
                 const container = document.querySelector('.chat-container');
                 if (container) {
@@ -208,6 +209,10 @@ export function OperationMessageCard({
           </Button>
         </div>
       ),
+    },
+    {
+      id: "address_validation" as OperationStep,
+      render: () => <AddressValidation />,
     },
     {
       id: "appointment_scheduling" as OperationStep,

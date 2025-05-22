@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react'
 import MapComponent from '../Map'
 import { createAppointment } from '@/actions/appointment'
 import { useChatbotStore } from '@/store/chatbot.store'
+import { useGeocoding } from '@/hooks/useGeocoding'
 
 interface Dealership {
   id: string
@@ -30,7 +31,8 @@ const TIME_SLOTS = [
 ]
 
 export default function AppointmentStep() {
-  const { operationSelected, selectedVehicle, additionalOperationSelected, addMessage } = useChatbotStore()
+  const { operationSelected, selectedVehicle, additionalOperationSelected, addMessage, userAddress } = useChatbotStore()
+  const { getCoordinatesFromAddress } = useGeocoding()
   const [dealerships, setDealerships] = useState<Dealership[]>([])
   const [dealershipSelected, setDealershipSelected] = useState<string>('')
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
@@ -54,6 +56,18 @@ export default function AppointmentStep() {
     fetchDealership()
   }, [])
 
+  useEffect(() => {
+    const fetchUserCoordinates = async () => {
+      if (userAddress) {
+        const coordinates = await getCoordinatesFromAddress(userAddress)
+        if (coordinates) {
+          setUserLocation(coordinates)
+        }
+      }
+    }
+    fetchUserCoordinates()
+  }, [userAddress, getCoordinatesFromAddress])
+
   const fetchDealership = async () => {
     try {
       const response = await fetch('http://localhost:8000/api/nearby-dealerships', {
@@ -67,10 +81,6 @@ export default function AppointmentStep() {
 
       const data = await response.json()
       setDealerships(data.dealerships)
-      setUserLocation({
-        latitude: data.userLocation.latitude,
-        longitude: data.userLocation.longitude
-      })
     } catch (error) {
       console.error(error)
     }
