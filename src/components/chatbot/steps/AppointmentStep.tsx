@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import React, { useEffect, useState } from 'react'
 import MapComponent from '../Map'
+import { createAppointment } from '@/actions/appointment'
+import { useChatbotStore } from '@/store/chatbot.store'
 
 interface Dealership {
   id: string
@@ -28,6 +30,7 @@ const TIME_SLOTS = [
 ]
 
 export default function AppointmentStep() {
+  const { operationSelected, selectedVehicle } = useChatbotStore()
   const [dealerships, setDealerships] = useState<Dealership[]>([])
   const [dealershipSelected, setDealershipSelected] = useState<string>('')
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
@@ -80,6 +83,18 @@ export default function AppointmentStep() {
       month: 'short'
     }).format(date)
   }
+  
+
+  const handleSubmit = async () => {
+    await createAppointment({
+      "appointmentDate": selectedDate.toISOString(),
+      "status": "string",
+      "dealership": `/api/dealerships/${dealershipSelected}`,
+      "supplementaryInfos": "string",
+      "carOperations": operationSelected.map((operation) => `/api/car_operations/${operation.id}`),
+      "vehicle": `/api/vehicles/${selectedVehicle?.id}`
+    })
+  }
 
   return (
     <div className='flex flex-col gap-4 w-full h-[600px]'>
@@ -131,7 +146,7 @@ export default function AppointmentStep() {
           <MapComponent dealerships={dealerships} dealershipSelected={dealershipSelected} userLocation={userLocation}/>
         </Card>
       </div>
-      <Button className='w-fit ml-auto'>Valider</Button>
+      <Button className='w-fit ml-auto' onClick={handleSubmit}>Valider</Button>
     </div>
   )
 }
