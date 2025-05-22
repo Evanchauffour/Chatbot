@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Wrench } from "lucide-react";
 import { MessageCard } from "./MessageCard";
@@ -12,6 +12,9 @@ import { useChatbotStore } from "@/store/chatbot.store";
 import type { AdditionalOperation, OperationStep } from "@/types/chatbot";
 import { Checkbox } from "../ui/checkbox";
 import OperationsSelection from "./steps/OperationsSelection";
+import ModalReasonSuggest from "./modal/ModalReasonSuggest";
+import { FaInfoCircle } from "react-icons/fa";
+import { HelpCircle } from "lucide-react";
 
 interface OperationMessageCardProps {
   message: string;
@@ -36,6 +39,8 @@ export function OperationMessageCard({
     selectOperation,
     operationSelected,
   } = useChatbotStore();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [currentReason, setCurrentReason] = useState<string>("");
 
   useEffect(() => {
     switch (operationState.step) {
@@ -126,11 +131,27 @@ export function OperationMessageCard({
                   setOperationStep("additional_operation_selection");
                 }}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
                   <Checkbox checked={operationSelected.includes(operation)} />
-                  <div>
+                  <div className="flex flex-col">
                     <p className="font-medium">{operation.operation}</p>
                     <p className="text-sm text-gray-500">{operation.price} €</p>
+                  </div>
+
+                  {/* Picto tout à droite */}
+                  <div className="ml-auto">
+                    <button
+                      className="text-blue-600 cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentReason(
+                          operation.reason || "Pas de raison fournie"
+                        );
+                        setModalOpen(true);
+                      }}
+                    >
+                      <FaInfoCircle size={20} />
+                    </button>
                   </div>
                 </div>
               </Card>
@@ -189,6 +210,11 @@ export function OperationMessageCard({
           </div>
         </Card>
       ))}
+      <ModalReasonSuggest
+        isOpen={modalOpen}
+        reason={currentReason}
+        onClose={() => setModalOpen(false)}
+      />
     </div>
   );
 }
