@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -9,7 +8,7 @@ import VehicleSelectionStep from "./steps/VehicleSelectionStep";
 import AddVehicleForm from "./steps/AddVehicleForm";
 import { createVehicle } from "@/actions/vehicle";
 import { useChatbotStore } from "@/store/chatbot.store";
-import type { AdditionalOperation, OperationStep } from "@/types/chatbot";
+import type { OperationStep } from "@/types/chatbot";
 import { Checkbox } from "../ui/checkbox";
 import AppointmentStep from "./steps/AppointmentStep";
 import { Button } from "../ui/button";
@@ -19,12 +18,10 @@ import { FaInfoCircle } from "react-icons/fa";
 
 interface OperationMessageCardProps {
   message: string;
-  operationsList: AdditionalOperation[];
 }
 
 export function OperationMessageCard({
   message,
-  operationsList,
 }: OperationMessageCardProps) {
   const {
     operationState,
@@ -34,9 +31,10 @@ export function OperationMessageCard({
     selectVehicle: storeSelectVehicle,
     setOperationStep,
     fetchAdditionalOperation,
+    operationsList,
     additionalOperation,
-    selectOperation,
-    operationSelected,
+    selectAdditionalOperation,
+    additionalOperationSelected,
   } = useChatbotStore();
   const [modalOpen, setModalOpen] = useState(false);
   const [currentReason, setCurrentReason] = useState<string>("");
@@ -49,6 +47,7 @@ export function OperationMessageCard({
       case "appointment_scheduling":
         fetchTimeSlots();
         break;
+      case "operations_selection":
       case "additional_operation_selection":
         if (vehicles.length > 0) {
           fetchAdditionalOperation(vehicles[0], "Vidange");
@@ -67,20 +66,14 @@ export function OperationMessageCard({
   const allSteps = [
     {
       id: "operations_selection" as OperationStep,
-      render: () => (
-        <OperationsSelection
-          operations={operationsList}
-          selectedOperationId={operationSelected[0]?.id ?? null}
-          onSelect={(op) => {
-            // si on est encore à operations_selection, on toggle et reste
-            if (operationState.step === "operations_selection") {
-              selectOperation(op);
-            }
-          }}
-          onNext={() => setOperationStep("vehicle_selection")}
-          readOnly={operationState.step !== "operations_selection"} // <— lecture seule après
-        />
-      ),
+      render: () => {
+        return (
+          <OperationsSelection
+            operations={operationsList}
+            readOnly={operationState.step !== "operations_selection"}
+          />
+        );
+      },
     },
     {
       id: "vehicle_selection" as OperationStep,
@@ -112,7 +105,7 @@ export function OperationMessageCard({
     {
       id: "additional_operation_selection" as OperationStep,
       render: () => (
-        <div className="space-y-4 w-full">
+        <div className="w-full flex flex-col gap-4">
           <h3 className="font-medium">
             Sélectionnez les services supplémentaires
           </h3>
@@ -121,17 +114,17 @@ export function OperationMessageCard({
               <Card
                 key={operation.operation}
                 className={`p-4 cursor-pointer transition-colors ${
-                  operationSelected.includes(operation)
+                  additionalOperationSelected.includes(operation)
                     ? "border-blue-500 bg-blue-50"
                     : ""
                 }`}
                 onClick={() => {
-                  selectOperation(operation);
+                  selectAdditionalOperation(operation);
                   setOperationStep("additional_operation_selection");
                 }}
               >
                 <div className="flex items-center gap-4">
-                  <Checkbox checked={operationSelected.includes(operation)} />
+                  <Checkbox checked={additionalOperationSelected.includes(operation)} />
                   <div className="flex flex-col">
                     <p className="font-medium">{operation.operation}</p>
                     <p className="text-sm text-gray-500">{operation.price} €</p>

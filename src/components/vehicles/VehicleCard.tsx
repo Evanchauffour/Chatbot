@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { VehicleSheet } from './VehicleSheet';
+import { Card } from '../ui/card';
 
 interface VehicleCardProps {
   id: number;
@@ -48,7 +49,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+    <Card className='p-4'>
       <div className="relative h-48 w-full">
         <Image
           src="/voiture.png"
@@ -57,7 +58,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
           className="object-cover"
         />
       </div>
-      <div className="p-4">
+      <div>
         <h3 className="text-xl font-semibold text-gray-800">{brand} {model}</h3>
         <p className="text-gray-600">Immatriculation: {registrationNumber}</p>
         <p className="text-gray-500">Kilométrage: {mileage} km</p>
@@ -78,7 +79,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
         mileage={mileage}
         imageUrl="/voiture.png"
       />
-    </div>
+    </Card>
   );
 };
 

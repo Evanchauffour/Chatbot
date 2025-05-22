@@ -12,9 +12,9 @@ export default async function Layout({ children }: { children: React.ReactNode }
   }
 
   return (
-    <div className='flex h-screen'>
+    <div className='flex h-screen overflow-hidden'>
       <NavBar />
-      <main className='mx-12 py-4 flex-1'>
+      <main className='mx-12 py-4 flex-1 overflow-y-auto'>
         {children}
       </main>
     </div>

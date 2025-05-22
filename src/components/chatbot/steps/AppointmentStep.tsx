@@ -30,7 +30,7 @@ const TIME_SLOTS = [
 ]
 
 export default function AppointmentStep() {
-  const { operationSelected, selectedVehicle } = useChatbotStore()
+  const { operationSelected, selectedVehicle, additionalOperationSelected, addMessage } = useChatbotStore()
   const [dealerships, setDealerships] = useState<Dealership[]>([])
   const [dealershipSelected, setDealershipSelected] = useState<string>('')
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
@@ -86,14 +86,17 @@ export default function AppointmentStep() {
   
 
   const handleSubmit = async () => {
+    const mergedOperations = [...operationSelected, ...additionalOperationSelected]
     await createAppointment({
       "appointmentDate": selectedDate.toISOString(),
       "status": "string",
       "dealership": `/api/dealerships/${dealershipSelected}`,
       "supplementaryInfos": "string",
-      "carOperations": operationSelected.map((operation) => `/api/car_operations/${operation.id}`),
+      "carOperations": mergedOperations.map((operation) => `/api/car_operations/${operation.id}`),
       "vehicle": `/api/vehicles/${selectedVehicle?.id}`
     })
+
+    addMessage("Votre rendez-vous a été créé avec succès ! Vous recevrez un email avec les informations du rendez-vous.", "general")
   }
 
   return (

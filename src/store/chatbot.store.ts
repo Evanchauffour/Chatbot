@@ -21,6 +21,7 @@ interface ChatbotStore {
   timeSlots: TimeSlot[];
   selectedVehicle: Vehicle | null;
   operationSelected: AdditionalOperation[];
+  additionalOperationSelected: AdditionalOperation[];
   isSearchDisabled: boolean;
   addMessage: (content: string, type: MessageType) => void;
   addUserMessage: (content: string) => void;
@@ -29,6 +30,7 @@ interface ChatbotStore {
   selectVehicle: (vehicleId: string) => void;
   selectTimeSlot: (timeSlotId: string) => void;
   selectOperation: (operation: AdditionalOperation) => void;
+  selectAdditionalOperation: (operation: AdditionalOperation) => void;
   fetchVehicles: () => Promise<void>;
   fetchAdditionalOperation: (
     vehicle: Vehicle,
@@ -52,6 +54,7 @@ export const useChatbotStore = create<ChatbotStore>((set) => ({
   timeSlots: [],
   selectedVehicle: null,
   operationSelected: [],
+  additionalOperationSelected: [],
   isSearchDisabled: false,
   addMessage: (content: string, type: MessageType) =>
     set((state) => ({
@@ -105,9 +108,16 @@ export const useChatbotStore = create<ChatbotStore>((set) => ({
 
   selectOperation: (operation) =>
     set((state) => ({
-      operationSelected: state.operationSelected.includes(operation)
-        ? state.operationSelected.filter((o) => o !== operation)
+      operationSelected: state.operationSelected.some(op => op.id === operation.id)
+        ? state.operationSelected.filter((o) => o.id !== operation.id)
         : [...state.operationSelected, operation],
+    })),
+
+  selectAdditionalOperation: (operation) =>
+    set((state) => ({
+      additionalOperationSelected: state.additionalOperationSelected.some(op => op.id === operation.id)
+        ? state.additionalOperationSelected.filter((o) => o.id !== operation.id)
+        : [...state.additionalOperationSelected, operation],
     })),
 
   selectTimeSlot: (timeSlotId) =>

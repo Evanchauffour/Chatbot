@@ -5,27 +5,28 @@ import { Calendar, MapPin } from 'lucide-react'
 import Link from 'next/link'
 
 interface AppointmentCardProps {
-  garageName: string
-  location: string
+  dealership: {
+    name: string
+    address: string
+    city: string
+  }
   date: Date
   vehicle: {
     id: string
-    name: string
     brand: string
     model: string
-    year: number
   }
   isPast?: boolean
 }
 
-export default function AppointmentCard({ garageName, location, date, vehicle, isPast = false }: AppointmentCardProps) {
+export default function AppointmentCard({ dealership, date, vehicle, isPast = false }: AppointmentCardProps) {
   return (
     <Card className={isPast ? 'opacity-50' : ''}>
       <CardHeader>
-        <CardTitle className="text-xl">{garageName}</CardTitle>
+        <CardTitle className="text-xl">{dealership.name}</CardTitle>
         <div className="flex items-start text-sm text-gray-500">
           <MapPin className="w-4 h-4 mr-1" />
-          <p className='flex-1'>{location}</p>
+          <p className='flex-1'>{dealership.address}, {dealership.city}</p>
         </div>
       </CardHeader>
       <CardContent>
@@ -36,7 +37,7 @@ export default function AppointmentCard({ garageName, location, date, vehicle, i
               {dayjs(date).locale('fr').format('D MMMM YYYY')}
             </p>
           </div>
-          <p className='text-sm'>Véhicule : <Link href={`/vehicles?vehicleId=${vehicle.id}`} className='text-blue-500'>{vehicle.name}</Link></p>
+          <p className='text-sm'>Véhicule : <Link href={`/vehicles?vehicleId=${vehicle.id}`} className='text-blue-500'>{vehicle.brand} {vehicle.model}</Link></p>
         </div>
       </CardContent>
     </Card>
