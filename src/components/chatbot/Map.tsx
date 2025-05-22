@@ -1,25 +1,48 @@
+"use client"
+
 // components/Map.tsx
 import dynamic from 'next/dynamic'
+import { useEffect, useState } from 'react'
+import type { DivIcon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import L from 'leaflet'
+
+// Loading component
+const LoadingMap = () => (
+  <div className='w-full h-full aspect-video flex items-center justify-center'>
+    <p>Chargement de la carte...</p>
+  </div>
+)
+
 // Dynamically import the map components with no SSR
 const Map = dynamic(
   () => import('react-leaflet').then((mod) => mod.MapContainer),
-  { ssr: false }
+  { 
+    ssr: false,
+    loading: () => <LoadingMap />
+  }
 )
 
 const TileLayer = dynamic(
   () => import('react-leaflet').then((mod) => mod.TileLayer),
-  { ssr: false }
+  { 
+    ssr: false,
+    loading: () => null
+  }
 )
 
 const Marker = dynamic(
   () => import('react-leaflet').then((mod) => mod.Marker),
-  { ssr: false }
+  { 
+    ssr: false,
+    loading: () => null
+  }
 )
 
 // Custom marker icons
-const createCustomIcon = (isSelected: boolean, dealership: Dealership) => {
+const createCustomIcon = async (isSelected: boolean, dealership: Dealership): Promise<DivIcon | undefined> => {
+  if (typeof window === 'undefined') return undefined;
+  
+  const L = (await import('leaflet')).default;
   return L.divIcon({
     className: 'custom-marker',
     html: 
@@ -51,19 +74,24 @@ const createCustomIcon = (isSelected: boolean, dealership: Dealership) => {
   })
 }
 
-const userLocationIcon = L.divIcon({
-  className: 'custom-marker',
-  html: `
-    <div class="relative">
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-red-500/30 rounded-full animate-ping"></div>
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-red-500/10 rounded-full animate-ping" style="animation-delay: 0.5s"></div>
-    </div>
-  `,
-  iconSize: [32, 32],
-  iconAnchor: [16, 16],
-  popupAnchor: [0, -16]
-})
+const createUserLocationIcon = async (): Promise<DivIcon | undefined> => {
+  if (typeof window === 'undefined') return undefined;
+  
+  const L = (await import('leaflet')).default;
+  return L.divIcon({
+    className: 'custom-marker',
+    html: `
+      <div class="relative">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-red-500/30 rounded-full animate-ping"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-red-500/10 rounded-full animate-ping" style="animation-delay: 0.5s"></div>
+      </div>
+    `,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16]
+  })
+}
 
 interface Dealership {
   id: string;
@@ -83,6 +111,39 @@ interface MapProps {
 }
 
 export default function MapComponent({ dealerships, dealershipSelected, userLocation }: MapProps) {
+  const [isClient, setIsClient] = useState(false);
+  const [icons, setIcons] = useState<{ 
+    user: DivIcon | undefined;
+    dealerships: (DivIcon | undefined)[];
+  }>({
+    user: undefined,
+    dealerships: []
+  });
+
+  useEffect(() => {
+    setIsClient(true);
+    
+    // Preload icons
+    const loadIcons = async () => {
+      const userIcon = await createUserLocationIcon();
+      const dealershipIcons = await Promise.all(
+        dealerships.map(dealership => 
+          createCustomIcon(dealership.id === dealershipSelected, dealership)
+        )
+      );
+      
+      setIcons({
+        user: userIcon,
+        dealerships: dealershipIcons
+      });
+    };
+    
+    loadIcons();
+  }, [dealerships, dealershipSelected]);
+
+  if (!isClient) {
+    return <LoadingMap />;
+  }
 
   if(userLocation.latitude === 0 && userLocation.longitude === 0 && dealerships.length === 0) {
     return (
@@ -103,18 +164,18 @@ export default function MapComponent({ dealerships, dealershipSelected, userLoca
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {dealerships.map((dealership) => (        
+      {dealerships.map((dealership, index) => (        
         <Marker
           key={dealership.id}
           position={[dealership.latitude, dealership.longitude] as [number, number]}
-          icon={createCustomIcon(dealership.id === dealershipSelected, dealership)}
+          icon={icons.dealerships[index]}
         >
           <div></div>
         </Marker>
       ))}
       <Marker
         position={[userLocation.latitude, userLocation.longitude] as [number, number]}
-        icon={userLocationIcon}
+        icon={icons.user}
       >
         <div></div>
       </Marker>
