@@ -27,8 +27,6 @@ const Marker = dynamic(
   { ssr: false }
 )
 
-import L from 'leaflet'
-
 interface Dealership {
   id: string
   name: string
@@ -48,34 +46,32 @@ interface MapProps {
 
 export default function Map({ dealerships, dealershipSelected, userLocation }: MapProps) {
   const [ready, setReady] = useState(false)
-  const [icons, setIcons] = useState<{ user: DivIcon; dealerships: DivIcon[] }>(
-    { user: L.divIcon(), dealerships: [] }
+  const [icons, setIcons] = useState<{ user?: DivIcon; dealerships: (DivIcon | undefined)[] }>(
+    { user: undefined, dealerships: [] }
   )
 
-  // Configure default Leaflet icons once on client
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    delete L.Icon.Default.prototype._getIconUrl
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: '/leaflet/marker-icon-2x.png',
-      iconUrl: '/leaflet/marker-icon.png',
-      shadowUrl: '/leaflet/marker-shadow.png',
-    })
-  }, [])
-
-  // Create custom icons and set ready
+  // Configure default Leaflet icons and create custom icons on client
   useEffect(() => {
     if (typeof window === 'undefined') return
 
-    async function initIcons() {
-      // User location icon
+    ;(async () => {
+      const L = (await import('leaflet')).default
+      // Default icons
+      delete L.Icon.Default.prototype._getIconUrl
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: '/leaflet/marker-icon-2x.png',
+        iconUrl: '/leaflet/marker-icon.png',
+        shadowUrl: '/leaflet/marker-shadow.png',
+      })
+
+      // Create user icon
       const userIcon = L.divIcon({
         className: 'custom-marker',
         html: `
-          <div class="relative">
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-red-500/30 rounded-full animate-ping"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-red-500/10 rounded-full animate-ping" style="animation-delay: 0.5s"></div>
+          <div class=\"relative\">
+            <div class=\"absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-red-500 rounded-full animate-pulse\"></div>
+            <div class=\"absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-red-500/30 rounded-full animate-ping\"></div>
+            <div class=\"absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-red-500/10 rounded-full animate-ping\" style=\"animation-delay: 0.5s\"></div>
           </div>
         `,
         iconSize: [32, 32],
@@ -83,37 +79,37 @@ export default function Map({ dealerships, dealershipSelected, userLocation }: M
         popupAnchor: [0, -16],
       })
 
-      // Dealership icons
-      const dealerIcons = await Promise.all(dealerships.map(d => {
-        const isSelected = d.id === dealershipSelected
-        const html = isSelected
-          ? `<div class="absolute top-0 left-1/2 -translate-x-1/2 bg-white rounded-lg p-4 shadow-xl border border-gray-200 min-w-[250px] transform transition-all duration-300 ease-in-out">
-               <div class="flex flex-col gap-2">
-                 <p class="text-base font-bold text-gray-800 whitespace-normal">${d.name}</p>
-                 ${d.address ? `<p class="text-sm text-gray-600 whitespace-normal">${d.address}</p>` : ''}
-               </div>
-             </div>`
-          : `<div class="relative group z-50">
-               <div class="w-4 h-4 bg-blue-500 rounded-full transition-all duration-300 ease-in-out group-hover:scale-125 group-hover:bg-blue-600 shadow-lg"></div>
-               <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-white px-3 py-2 rounded-lg text-sm font-medium text-gray-800 opacity-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap shadow-lg border border-gray-100">
-                 ${d.name}
-               </div>
-             </div>`
+      // Create dealership icons
+      const dealerIcons = await Promise.all(
+        dealerships.map(d => {
+          const isSelected = d.id === dealershipSelected
+          const html = isSelected
+            ? `<div class="absolute top-0 left-1/2 -translate-x-1/2 bg-white rounded-lg p-4 shadow-xl border border-gray-200 min-w-[250px] transform transition-all duration-300 ease-in-out">
+                 <div class="flex flex-col gap-2">
+                   <p class="text-base font-bold text-gray-800 whitespace-normal">${d.name}</p>
+                   ${d.address ? `<p class=\"text-sm text-gray-600 whitespace-normal\">${d.address}</p>` : ''}
+                 </div>
+               </div>`
+            : `<div class="relative group z-50">
+                 <div class="w-4 h-4 bg-blue-500 rounded-full transition-all duration-300 ease-in-out group-hover:scale-125 group-hover:bg-blue-600 shadow-lg"></div>
+                 <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-white px-3 py-2 rounded-lg text-sm font-medium text-gray-800 opacity-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap shadow-lg border border-gray-100">
+                   ${d.name}
+                 </div>
+               </div>`
 
-        return L.divIcon({
-          className: 'custom-marker',
-          html,
-          iconSize: isSelected ? [250, 100] : [16, 16],
-          iconAnchor: isSelected ? [125, 100] : [8, 8],
-          popupAnchor: isSelected ? [0, -100] : [0, -8],
+          return L.divIcon({
+            className: 'custom-marker',
+            html,
+            iconSize: isSelected ? [250, 100] : [16, 16],
+            iconAnchor: isSelected ? [125, 100] : [8, 8],
+            popupAnchor: isSelected ? [0, -100] : [0, -8],
+          })
         })
-      }))
+      )
 
       setIcons({ user: userIcon, dealerships: dealerIcons })
       setReady(true)
-    }
-
-    initIcons()
+    })()
   }, [dealerships, dealershipSelected])
 
   if (!ready) return <LoadingMap />
