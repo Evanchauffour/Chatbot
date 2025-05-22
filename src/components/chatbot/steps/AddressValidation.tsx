@@ -45,6 +45,15 @@ export default function AddressValidation() {
         setUserAddress(data.address)
         setUserCoordinates(result.coordinates)
         setOperationStep("appointment_scheduling")
+        setTimeout(() => {
+          const container = document.querySelector('.chat-container');
+          if (container) {
+            container.scrollTo({
+              top: container.scrollHeight,
+              behavior: 'smooth'
+            });
+          }
+        }, 100);
       }
     } catch (error) {
       console.error(error)
