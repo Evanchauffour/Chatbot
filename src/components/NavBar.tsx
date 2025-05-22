@@ -36,7 +36,7 @@ export default function NavBar() {
       </nav>
       <div className='flex justify-between items-center'>
         <Button variant='ghost' asChild className='justify-start hover:bg-gray-200 p-6 rounded-md'>
-          <Link href='/account'>
+          <Link href='/profile'>
             <User className='w-4 h-4 mr-2' />
             {user?.firstName} {user?.lastName}
           </Link>
