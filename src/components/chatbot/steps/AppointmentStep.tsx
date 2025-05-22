@@ -44,11 +44,11 @@ export default function AppointmentStep() {
 
   useEffect(() => {
     fetchDealership()
-  }, [userCoordinates])
+  }, [])
 
   const fetchDealership = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/nearby-dealerships', {
+      const response = await fetch(`http://localhost:8000/api/nearby-dealerships?latitude=${userCoordinates?.latitude}&longitude=${userCoordinates?.longitude}`, {
         method: 'GET',
         credentials: 'include',
       })
