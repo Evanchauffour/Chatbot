@@ -54,13 +54,13 @@ export default function OperationsSelection({
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Sélectionner des opérations</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-lg md:text-xl">Sélectionner des opérations</CardTitle>
+        <CardDescription className="text-sm md:text-base">
           Choisissez les services que vous souhaitez réaliser.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
+        <div className="space-y-2 md:space-y-3">
           {operations.map((op) => {
             const checkboxId = `op-${op.id}`;
             const isSelected = operationSelected.some(selected => selected.id === op.id);
@@ -68,12 +68,12 @@ export default function OperationsSelection({
             return (
               <div
                 key={op.id}
-                className={`flex items-center justify-between p-3 border rounded-lg 
+                className={`flex items-center justify-between p-2 md:p-3 border rounded-lg 
                     ${readOnly ? "" : "cursor-pointer hover:bg-gray-50"} 
                     ${isSelected ? "border-blue-500 bg-blue-50" : ""}`}
                 onClick={() => handleOperationToggle(op)}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 md:gap-3">
                   <Checkbox
                     id={checkboxId}
                     checked={isSelected}
@@ -84,20 +84,21 @@ export default function OperationsSelection({
                     htmlFor={checkboxId}
                     className={`cursor-pointer ${readOnly ? "cursor-default" : ""}`}
                   >
-                    <p className="font-medium">{op.operation}</p>
-                    <p className="text-sm text-muted-foreground">{op.name}</p>
+                    <p className="font-medium text-sm md:text-base">{op.operation}</p>
+                    <p className="text-xs md:text-sm text-muted-foreground">{op.name}</p>
                   </label>
                 </div>
-                <p className="text-sm font-semibold">{op.price} €</p>
+                <p className="text-xs md:text-sm font-semibold">{op.price} €</p>
               </div>
             );
           })}
         </div>
       </CardContent>
-      <CardFooter className="flex justify-end">
+      <CardFooter className="flex justify-end p-4 md:p-6">
         <Button 
           onClick={handleNext}
           disabled={readOnly || operationSelected.length === 0}
+          className="w-full md:w-auto"
         >
           Suivant
         </Button>

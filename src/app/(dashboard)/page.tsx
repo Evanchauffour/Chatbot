@@ -8,7 +8,7 @@ import { Plus } from "lucide-react";
 export default function Home() {
   const { resetStore } = useChatbotStore();
   return (
-    <div className="h-full flex flex-col gap-2 py-6 px-6 overflow-hidden">
+    <div className="h-full flex flex-col gap-2 py-6 px-2 md:px-6 overflow-hidden">
       <Button
         className="flex items-center gap-2 w-fit bg-blue-500 hover:bg-blue-600 text-white"
         onClick={() => resetStore()}

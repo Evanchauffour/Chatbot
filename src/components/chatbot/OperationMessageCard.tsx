@@ -139,20 +139,20 @@ export function OperationMessageCard({
     {
       id: "additional_operation_selection" as OperationStep,
       render: () => (
-        <div className="w-full flex flex-col gap-4">
-          <h3 className="font-medium">
+        <div className="w-full flex flex-col gap-2 md:gap-4">
+          <h3 className="font-medium text-base md:text-lg">
             Sélectionnez les services supplémentaires
           </h3>
-          <div className="grid grid-cols-3 gap-4 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 w-full">
             {isAdditionalOperationLoading ? (
               Array(3).fill(0).map((_, index) => (
-                <Skeleton key={index} className="h-24 w-full" />
+                <Skeleton key={index} className="h-20 md:h-24 w-full" />
               ))
             ) : (
               additionalOperation.map((operation) => (
                 <Card
                   key={operation.operation}
-                  className={`p-4 cursor-pointer transition-colors ${
+                  className={`p-2 md:p-4 cursor-pointer transition-colors ${
                     additionalOperationSelected.includes(operation)
                       ? "border-blue-500 bg-blue-50"
                       : ""
@@ -162,14 +162,13 @@ export function OperationMessageCard({
                     setOperationStep("additional_operation_selection");
                   }}
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 md:gap-4">
                     <Checkbox checked={additionalOperationSelected.includes(operation)} />
                     <div className="flex flex-col">
-                      <p className="font-medium">{operation.operation}</p>
-                      <p className="text-sm text-gray-500">{operation.price} €</p>
+                      <p className="font-medium text-sm md:text-base">{operation.operation}</p>
+                      <p className="text-xs md:text-sm text-gray-500">{operation.price} €</p>
                     </div>
 
-                    {/* Picto tout à droite */}
                     <div className="ml-auto">
                       <button
                         className="text-blue-500 cursor-pointer"
@@ -181,7 +180,7 @@ export function OperationMessageCard({
                           setModalOpen(true);
                         }}
                       >
-                        <FaInfoCircle size={20} />
+                        <FaInfoCircle size={18} className="md:w-5 md:h-5" />
                       </button>
                     </div>
                   </div>
@@ -202,9 +201,9 @@ export function OperationMessageCard({
                 }
               }, 100);
             }}
-            className="w-fit ml-auto"
+            className="w-full md:w-fit ml-auto mt-2 md:mt-0"
           >
-            <MapPin className="h-4 w-4" />
+            <MapPin className="h-4 w-4 mr-2" />
             <p>Choisir un garage</p>
           </Button>
         </div>
@@ -232,10 +231,10 @@ export function OperationMessageCard({
   );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2 md:space-y-4">
       <MessageCard message={message} />
       {stepsToRender.slice(0, currentIndex + 1).map((step) => (
-        <Card key={step.id} className="p-4 w-full bg-blue-50 border-blue-200">
+        <Card key={step.id} className="p-2 md:p-4 w-full bg-blue-50 border-blue-200">
           <div className="flex items-start gap-2">
             <Wrench className="h-4 w-4 text-blue-500 mt-1" />
             {step.render()}

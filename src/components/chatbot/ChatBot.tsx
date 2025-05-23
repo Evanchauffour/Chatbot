@@ -67,27 +67,8 @@ export default function ChatBot() {
         h-full overflow-hidden pb-4
       "
     >
-      <div
-        className="
-          absolute inset-0
-          bg-[url('/chat.png')]
-          bg-cover bg-center
-          brightness-65
-          opacity-55
-        "
-        aria-hidden="true"
-      />
 
-      <div
-        className="
-          absolute inset-0
-          bg-white/10       
-          backdrop-blur-xs   
-        "
-        aria-hidden="true"
-      />
-
-      <div className="relative flex-1 overflow-y-auto chat-container px-6 py-6">
+      <div className="relative flex-1 overflow-y-auto chat-container py-6">
         <div className="space-y-4">
           {messages.map((message, index) => (
             <div key={message.id} className="space-y-4">

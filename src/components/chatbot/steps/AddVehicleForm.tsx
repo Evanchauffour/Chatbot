@@ -49,13 +49,13 @@ export default function AddVehicleForm({
   };
 
   return (
-    <div className="flex justify-center px-4 py-8">
+    <div className="flex justify-center px-2 md:px-4 py-4 md:py-8">
       <form onSubmit={handleSubmit} className="w-full max-w-5xl">
-        <Card className="p-8 space-y-8">
-          <h3 className="text-2xl font-semibold text-center">
+        <Card className="p-4 md:p-8 space-y-4 md:space-y-8">
+          <h3 className="text-xl md:text-2xl font-semibold text-center">
             Ajouter un nouveau véhicule
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
             {[
               {
                 id: "brand",
@@ -75,11 +75,11 @@ export default function AddVehicleForm({
               },
               {
                 id: "registrationNumber",
-                label: "N° d’immatriculation",
+                label: "N° d'immatriculation",
                 type: "text",
                 value: formData.registrationNumber,
                 onChange: (v: string) => handleChange("registrationNumber", v),
-                placeholder: "N° d’immatriculation",
+                placeholder: "N° d'immatriculation",
               },
               {
                 id: "vin",
@@ -108,7 +108,7 @@ export default function AddVehicleForm({
               },
             ].map(({ id, label, type, value, onChange, placeholder }) => (
               <div key={id}>
-                <Label htmlFor={id} className="text-lg">
+                <Label htmlFor={id} className="text-base md:text-lg">
                   {label}
                 </Label>
                 <Input
@@ -118,19 +118,19 @@ export default function AddVehicleForm({
                   placeholder={placeholder}
                   onChange={(e) => onChange(e.target.value)}
                   required
-                  className="w-full h-12 text-lg"
+                  className="w-full h-10 md:h-12 text-base md:text-lg"
                 />
               </div>
             ))}
           </div>
 
-          <div className="flex justify-end gap-6 pt-6">
+          <div className="flex justify-end gap-4 md:gap-6 pt-4 md:pt-6">
             <Button
               variant="outline"
               size="sm"
               onClick={onCancel}
               disabled={isPending}
-              className="px-6"
+              className="px-4 md:px-6"
             >
               Annuler
             </Button>
@@ -138,7 +138,7 @@ export default function AddVehicleForm({
               type="submit"
               size="sm"
               disabled={isPending}
-              className="px-6"
+              className="px-4 md:px-6"
             >
               {isPending ? "En cours…" : "Enregistrer"}
             </Button>

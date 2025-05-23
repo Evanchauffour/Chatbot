@@ -115,9 +115,9 @@ export default function AppointmentStep() {
   return (
     <div className='flex flex-col gap-4 w-full h-[600px]'>
       <h3 className='text-lg font-medium'>Choisissez une concession</h3>
-      <div className='flex gap-4 w-full flex-1 overflow-hidden'>
-        <aside className='h-full flex flex-col gap-2'>
-          <div className='grid grid-cols-3 gap-1 pb-2'>
+      <div className='flex flex-col md:flex-row gap-4 w-full flex-1 overflow-hidden'>
+        <aside className='h-[300px] md:h-full flex flex-col gap-2'>
+          <div className='grid grid-cols-4 md:grid-cols-3 gap-1 pb-2 overflow-x-auto'>
             {getNextDays(7).map((date, index) => (
               <Button
                 key={index}
@@ -141,7 +141,7 @@ export default function AppointmentStep() {
                   <p className={`text-xs ${dealershipSelected === dealership.id ? 'text-white' : 'text-gray-500'}`}>{dealership.address}, {dealership.city}</p>
                 </Button>
                 {dealershipSelected === dealership.id && (
-                  <div className='grid grid-cols-3 gap-1 pl-2'>
+                  <div className='grid grid-cols-4 md:grid-cols-3 gap-1 pl-2'>
                     {TIME_SLOTS.map((slot) => (
                       <Button
                         key={slot}
@@ -158,7 +158,7 @@ export default function AppointmentStep() {
             ))}
           </Card>
         </aside>
-        <Card className='p-4 flex-1'>
+        <Card className='p-4 flex-1 h-[300px] md:h-auto'>
           {userCoordinates && userCoordinates.latitude !== 0 && userCoordinates.longitude !== 0 && (
             <MapComponent dealerships={dealerships} dealershipSelected={dealershipSelected} userLocation={userCoordinates}/>
           )}
